@@ -3,8 +3,13 @@ A Kotlin Multiplatform and Jetpack Compose Multiplatform compliant implementatio
 The project aims to create a Jetpack Compose data table with MUI Data Grid serving as a
 reference for common and expected functionalities.
 
+## 🚧 Converting this project into a library and publishing it on Maven Central is currently underway.
+
 Right now, it works on Desktop and Android, while the Kotlin/Wasm has partial support — it is 
 limited by Kotlin/Wasm not having support for number and date formatting, but it works otherwise.
+
+![image](https://github.com/user-attachments/assets/6dbf39d9-f56a-4d3f-b344-0461c5199200)
+
 
 # Implemented features
 - Column width settings
@@ -19,7 +24,7 @@ limited by Kotlin/Wasm not having support for number and date formatting, but it
   - Date
   - Checkbox (Boolean)
 - Column aligning
-- Text selection (works but selecting multiple cells at once just concatenates them without a divider)
+- Text selection (works but selecting multiple cells at once just concatenates them without whitespace)
 - Toggleable selection column (first column with tri-state checkbox header and checkbox cells, which emits events on interaction)
 
 # Planned features
@@ -33,11 +38,10 @@ limited by Kotlin/Wasm not having support for number and date formatting, but it
   - Dropdown (specific set of values)
   - Chips (like dropdown, but can have multiple values)
   - Custom (you provide the Composable for the cell)
-- Row checkboxes (first column as a checkbox)
 - Scrolling
   - Vertical
   - Horizontal
-- Pagination (if paginated, row height must be fixed)
+- Pagination
 - Lazy loading
 - Filtering
 - Improved text selection (with dividers between cells)
@@ -53,20 +57,77 @@ limited by Kotlin/Wasm not having support for number and date formatting, but it
 - Keyboard support
 - Measure performance, and ensure that there are no performance pitfalls
 
-### Column width calculation
+### Example
+```kotlin
+data class SampleDataClass(
+    val aString: String,
+    val aInt: Int,
+    val aFloat: Double,
+    val aDouble: Double,
+    val aDate: LocalDate,
+    val aBoolean: Boolean
+)
 
-Column width is done in two passes:
+val sampleData = listOf(
+    SampleDataClass(
+        "First entry",
+        1,
+        1.23,
+        4.56,
+        LocalDate(2021, 1, 20),
+        true
+    ),
+    SampleDataClass(
+        "Second entry",
+        2,
+        7.89,
+        0.12,
+        LocalDate(2025, 12, 28),
+        false
+    ),
+    SampleDataClass(
+        "Third entry",
+        3,
+        3.45,
+        6.78,
+        LocalDate(2024, 5, 15),
+        true
+    )
+)
 
-1. Column widths for `WrapContent` and `Fixed` columns is calculated
-   - `Fixed` is reading the provided value
-   - `WrapContent` is looking for the composable in the column (including the header) with
-     the biggest `maxIntrinsicWidth` to determine its width. If using custom layouts as composables, it is
-     important that the `maxIntrinsicWidth` function is overridden and correctly implemented in order for
-     `WrapContent` to work correctly
-2. The remaining width is split among `Flex` columns (if any), based on the weights provided
+@Composable
+@Preview
+fun App(tableModifier: Modifier = Modifier) {
+    MaterialTheme {
+        val columnSpecs = listOf<ColumnSpec<SampleDataClass, *>>(
+            TextColumnSpec("Text", WidthSetting.WrapContent) { it.aString },
+            IntColumnSpec("Int", WidthSetting.WrapContent, { it.aInt }),
+            DateColumnSpec("Date", WidthSetting.WrapContent, { it.aDate }, "MM/dd/YYYY"),
+            DoubleColumnSpec("Double", WidthSetting.WrapContent, valueSelector = { it.aDouble }),
+            CheckboxColumnSpec("Checkbox", WidthSetting.WrapContent) { it.aBoolean }
+        )
+
+        Column {
+
+            var selectedCount by remember { mutableStateOf(0) }
+
+            Table(
+                columnSpecs,
+                sampleData,
+                modifier = tableModifier.padding(20.dp),
+                showSelectionColumn = true,
+                onSelectionChange = { list -> selectedCount = list.size }
+            )
+
+            if (selectedCount > 0) {
+                Text("Selected: $selectedCount")
+            }
+
+        }
+    }
+}
+```
 
 In both of those cases, there is (currently) no additional logic for covering the case where there
 isn't enough space for completely displaying all columns, and they will be simply visually cut-off.
 To work around this, you can provide a scrollable container for the Table composable.
-
-
