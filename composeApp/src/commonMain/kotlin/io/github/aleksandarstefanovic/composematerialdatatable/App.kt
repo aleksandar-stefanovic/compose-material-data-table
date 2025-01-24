@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+enum class SampleState {
+    INACTIVE, ACTIVE, PAUSED
+}
 
 data class SampleDataClass(
     val aString: String,
@@ -34,7 +37,8 @@ data class SampleDataClass(
     val aFloat: Double,
     val aDouble: Double,
     val aDate: LocalDate,
-    val aBoolean: Boolean
+    val aBoolean: Boolean,
+    val aEnum: SampleState
 )
 
 val sampleData = listOf(
@@ -44,7 +48,8 @@ val sampleData = listOf(
         1.23,
         4.56,
         LocalDate(2021, 1, 20),
-        true
+        true,
+        SampleState.PAUSED
     ),
     SampleDataClass(
         "Second entry",
@@ -52,7 +57,8 @@ val sampleData = listOf(
         7.89,
         0.12,
         LocalDate(2025, 12, 28),
-        false
+        false,
+        SampleState.ACTIVE
     ),
     SampleDataClass(
         "Third entry",
@@ -60,30 +66,37 @@ val sampleData = listOf(
         3.45,
         6.78,
         LocalDate(2024, 5, 15),
-        true
+        true,
+        SampleState.INACTIVE
     )
 )
 
 @Composable
 @Preview
-fun App(tableModifier: Modifier = Modifier) {
+fun App(modifier: Modifier = Modifier) {
     MaterialTheme {
         val columnSpecs = listOf<ColumnSpec<SampleDataClass, *>>(
             TextColumnSpec("Text", WidthSetting.WrapContent) { it.aString },
             IntColumnSpec("Int", WidthSetting.WrapContent, { it.aInt }),
             DateColumnSpec("Date", WidthSetting.WrapContent, { it.aDate }, "MM/dd/YYYY"),
             DoubleColumnSpec("Double", WidthSetting.WrapContent, valueSelector = { it.aDouble }),
+            DropdownColumnSpec("Dropdown", WidthSetting.WrapContent, { it.aEnum }, {
+                when (it) {
+                    SampleState.INACTIVE -> "Inactive"
+                    SampleState.ACTIVE -> "Active"
+                    SampleState.PAUSED -> "Paused"
+                }
+            }, listOf(SampleState.ACTIVE, SampleState.PAUSED, SampleState.INACTIVE), {}),
             CheckboxColumnSpec("Checkbox", WidthSetting.WrapContent) { it.aBoolean }
         )
 
-        Column {
-
+        Column(modifier) {
             var selectedCount by remember { mutableStateOf(0) }
 
             Table(
                 columnSpecs,
                 sampleData,
-                modifier = tableModifier.padding(10.dp),
+                modifier = Modifier.padding(20.dp),
                 showSelectionColumn = true,
                 onSelectionChange = { list -> selectedCount = list.size }
             )
@@ -93,8 +106,6 @@ fun App(tableModifier: Modifier = Modifier) {
             }
 
         }
-
-
     }
 }
 
@@ -232,6 +243,7 @@ fun <T> Table(
                     is DoubleColumnSpec -> DoubleCell(columnSpec.valueSelector(rowData), columnSpec.numberFormat, textAlign)
                     is DateColumnSpec -> DateCell(columnSpec.valueSelector(rowData), columnSpec.dateFormat, textAlign)
                     is CheckboxColumnSpec -> CheckboxCell(columnSpec.valueSelector(rowData), onClick = { }) // TODO
+                    is DropdownColumnSpec -> DropdownCell(columnSpec, rowData)
                 }
             }
         }

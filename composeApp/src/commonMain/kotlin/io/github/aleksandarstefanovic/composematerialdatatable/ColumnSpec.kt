@@ -82,3 +82,16 @@ class CheckboxColumnSpec<T>(
     }
 }
 
+class DropdownColumnSpec<T, S: Comparable<S>>(
+    headerName: String,
+    widthSetting: WidthSetting,
+    valueSelector: (T) -> S,
+    val valueFormatter: (S) -> String = { it.toString() },
+    val choices: List<S>,
+    val onChoicePicked: (S) -> Unit
+) : ColumnSpec<T, S>(headerName, widthSetting, valueSelector) {
+
+    override fun copy(widthSetting: WidthSetting): ColumnSpec<T, S> {
+        return DropdownColumnSpec(headerName, widthSetting, valueSelector, valueFormatter, choices, onChoicePicked)
+    }
+}

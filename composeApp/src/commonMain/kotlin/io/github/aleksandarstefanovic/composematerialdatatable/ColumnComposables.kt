@@ -4,15 +4,22 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Checkbox
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material.TriStateCheckbox
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -95,4 +102,26 @@ fun DateCell(date: LocalDate, dateFormat: String, textAlign: TextAlign) {
 @Composable
 fun CheckboxCell(selected: Boolean, onClick: (Boolean) -> Unit) {
     Checkbox(selected, onClick, Modifier.background(Color.White))
+}
+
+@Composable
+fun <T, S : Comparable<S>> DropdownCell(
+    spec: DropdownColumnSpec<T, S>,
+    rowData: T,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(Modifier.clickable { expanded = true }.background(Color.White).padding(16.dp)) {
+        Text(spec.valueFormatter(spec.valueSelector(rowData)))
+        DropdownMenu(expanded, onDismissRequest = { expanded = false }) {
+            spec.choices.forEach { choice ->
+                DropdownMenuItem(onClick = {
+                    spec.onChoicePicked(choice)
+                    expanded = false
+                }) {
+                    Text(spec.valueFormatter(choice))
+                }
+            }
+        }
+    }
 }
