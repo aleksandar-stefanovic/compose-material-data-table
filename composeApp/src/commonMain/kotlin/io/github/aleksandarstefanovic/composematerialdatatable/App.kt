@@ -86,7 +86,7 @@ fun App(modifier: Modifier = Modifier) {
         val columnSpecs = listOf<ColumnSpec<SampleDataClass, *>>(
             TextColumnSpec("Text", WidthSetting.WrapContent) { it.aString },
             IntColumnSpec("Int", WidthSetting.WrapContent, { it.aInt }),
-            DateColumnSpec("Date", WidthSetting.WrapContent, { it.aDate }, "MM/dd/YYYY"),
+            DateColumnSpec("Date", WidthSetting.WrapContent, { it.aDate }),
             DoubleColumnSpec("Double", WidthSetting.WrapContent, valueSelector = { it.aDouble }),
             DropdownColumnSpec("Dropdown", WidthSetting.WrapContent, { it.aEnum }, {
                 when (it) {

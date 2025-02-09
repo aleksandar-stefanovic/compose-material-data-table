@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format.DateTimeFormat
 
 @Composable
 fun TextHeader(
@@ -95,8 +96,8 @@ fun DoubleCell(double: Double, numberFormat: String? = null, textAlign: TextAlig
 }
 
 @Composable
-fun DateCell(date: LocalDate, dateFormat: String, textAlign: TextAlign) {
-    Text(date.format(dateFormat), defaultCellModifier, textAlign = textAlign)
+fun DateCell(date: LocalDate, dateFormat: DateTimeFormat<LocalDate>, textAlign: TextAlign) {
+    Text(dateFormat.format(date), defaultCellModifier, textAlign = textAlign)
 }
 
 @Composable

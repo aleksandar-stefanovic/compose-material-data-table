@@ -3,6 +3,7 @@ package io.github.aleksandarstefanovic.composematerialdatatable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.unit.Dp
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format.DateTimeFormat
 
 sealed class WidthSetting {
     class Static(val width: Dp) : WidthSetting()
@@ -62,8 +63,8 @@ class DateColumnSpec<T>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> LocalDate,
-    val dateFormat: String = "YYYY-MM-dd",
-    ) : ColumnSpec<T, LocalDate>(headerName, widthSetting, valueSelector, Arrangement.End) {
+    val dateFormat: DateTimeFormat<LocalDate> = LocalDate.Formats.ISO,
+    ) : ColumnSpec<T, LocalDate>(headerName, widthSetting, valueSelector, Arrangement.Start) {
 
     override fun copy(widthSetting: WidthSetting): ColumnSpec<T, LocalDate> {
         return DateColumnSpec(headerName, widthSetting, valueSelector, dateFormat)

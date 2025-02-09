@@ -6,7 +6,7 @@ reference for common and expected functionalities.
 ## 🚧 Converting this project into a library and publishing it on Maven Central is currently underway.
 
 Right now, it works on Desktop and Android, while the Kotlin/Wasm has partial support — it is 
-limited by Kotlin/Wasm not having support for number and date formatting, but it works otherwise.
+limited by Kotlin/Wasm not having support for number formatting, but it works otherwise.
 
 ![image](https://github.com/user-attachments/assets/6dbf39d9-f56a-4d3f-b344-0461c5199200)
 
