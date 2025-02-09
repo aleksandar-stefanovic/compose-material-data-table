@@ -26,6 +26,7 @@ limited by Kotlin/Wasm not having support for number and date formatting, but it
 - Column aligning
 - Text selection (works but selecting multiple cells at once just concatenates them without whitespace)
 - Toggleable selection column (first column with tri-state checkbox header and checkbox cells, which emits events on interaction)
+- Filtering (right now, only Text column type is supported)
 
 # Planned features
 - Full implementation of the Material Data Table spec
