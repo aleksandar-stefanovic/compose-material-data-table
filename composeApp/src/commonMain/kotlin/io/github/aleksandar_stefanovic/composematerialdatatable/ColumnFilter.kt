@@ -1,4 +1,4 @@
-package io.github.aleksandarstefanovic.composematerialdatatable
+package io.github.aleksandar_stefanovic.composematerialdatatable
 
 
 abstract class ColumnFilter<T>(val columnSpec: TextColumnSpec<T>) {

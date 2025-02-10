@@ -1,4 +1,4 @@
-package io.github.aleksandarstefanovic.composematerialdatatable
+package io.github.aleksandar_stefanovic.composematerialdatatable
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

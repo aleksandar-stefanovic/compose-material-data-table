@@ -1,4 +1,4 @@
-package io.github.aleksandarstefanovic.composematerialdatatable
+package io.github.aleksandar_stefanovic.composematerialdatatable
 
 expect fun String.format(int: Int): String
 

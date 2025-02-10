@@ -1,4 +1,4 @@
-package io.github.aleksandarstefanovic.composematerialdatatable
+package io.github.aleksandar_stefanovic.composematerialdatatable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.unit.Dp

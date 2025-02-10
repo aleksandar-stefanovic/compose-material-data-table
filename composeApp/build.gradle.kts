@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
@@ -12,8 +11,11 @@ plugins {
 }
 
 kotlin {
+
+    // Explicit API compiler flag, since this is a library. Switch from Warning to Strict at some point
+    explicitApiWarning()
+
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -68,11 +70,11 @@ kotlin {
 }
 
 android {
-    namespace = "io.github.aleksandarstefanovic.composematerialdatatable"
+    namespace = "io.github.aleksandar_stefanovic.composematerialdatatable"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "io.github.aleksandarstefanovic.composematerialdatatable"
+        applicationId = "io.github.aleksandar_stefanovic.composematerialdatatable"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -100,11 +102,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "io.github.aleksandarstefanovic.composematerialdatatable.MainKt"
+        mainClass = "io.github.aleksandar_stefanovic.composematerialdatatable.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "io.github.aleksandarstefanovic.composematerialdatatable"
+            packageName = "io.github.aleksandar_stefanovic.composematerialdatatable"
             packageVersion = "1.0.0"
         }
     }
