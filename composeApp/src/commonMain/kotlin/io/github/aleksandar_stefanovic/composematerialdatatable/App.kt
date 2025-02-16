@@ -335,16 +335,15 @@ public fun <T> Table(
                                 columnSpecs[colIndex].widthSetting
                             }
 
-                            when (widthSetting) {
+                            return@map when (widthSetting) {
                                 is WidthSetting.Flex -> 0 // Will be set at a later point
                                 is WidthSetting.Static -> widthSetting.width.roundToPx()
                                 WidthSetting.WrapContent -> {
-                                    // Iterate over all the measurables in this row, find the tallest one
-                                    measurables.mapIndexed { index, rowMeasurables ->
-                                        val targetHeight =
-                                            if (index == 0) 56.dp else 52.dp // Per Material 2 specs
+                                    // Iterate over all the measurables in this row, find the widest one
+                                    measurables.maxOf { rowMeasurables ->
+                                        val targetHeight = 56.dp // Per Material specs
                                         rowMeasurables[colIndex].maxIntrinsicWidth(targetHeight.roundToPx())
-                                    }.max()
+                                    }
                                 }
                             }
                         }
@@ -370,8 +369,8 @@ public fun <T> Table(
                         }
 
                         val placeablesByRow: List<List<Placeable>> =
-                            measurables.mapIndexed { rowIndex, rowMeasurables ->
-                                val targetHeight = (if (rowIndex == 0) 56.dp else 52.dp).roundToPx()
+                            measurables.map { rowMeasurables ->
+                                val targetHeight = 56.dp.roundToPx()
                                 rowMeasurables.mapIndexed { colIndex, measurable ->
                                     val columnWidth = columnWidths[colIndex]
                                     val cellConstraints = Constraints(

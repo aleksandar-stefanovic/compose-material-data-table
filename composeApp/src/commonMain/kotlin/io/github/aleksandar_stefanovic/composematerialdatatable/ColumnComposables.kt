@@ -64,7 +64,7 @@ internal fun TextHeader(
 }
 
 @Composable
-fun CheckboxHeader(state: ToggleableState, onClick: () -> Unit) {
+internal fun CheckboxHeader(state: ToggleableState, onClick: () -> Unit) {
     TriStateCheckbox(state, onClick, Modifier.background(Color.White))
 }
 
@@ -72,12 +72,12 @@ private val defaultCellModifier = Modifier.background(Color.White).padding(16.dp
 
 
 @Composable
-fun TextCell(text: String, textAlign: TextAlign) {
+internal fun TextCell(text: String, textAlign: TextAlign) {
     Text(text, defaultCellModifier, textAlign = textAlign)
 }
 
 @Composable
-fun IntCell(int: Int, numberFormat: String? = null, textAlign: TextAlign) {
+internal fun IntCell(int: Int, numberFormat: String? = null, textAlign: TextAlign) {
     val stringValue = numberFormat?.format(int) ?: int.toString()
     Text(
         stringValue,
@@ -87,7 +87,7 @@ fun IntCell(int: Int, numberFormat: String? = null, textAlign: TextAlign) {
 }
 
 @Composable
-fun DoubleCell(double: Double, numberFormat: String? = null, textAlign: TextAlign) {
+internal fun DoubleCell(double: Double, numberFormat: String? = null, textAlign: TextAlign) {
     Text(
         numberFormat?.format(double) ?: double.toString(),
         defaultCellModifier,
@@ -96,17 +96,17 @@ fun DoubleCell(double: Double, numberFormat: String? = null, textAlign: TextAlig
 }
 
 @Composable
-fun DateCell(date: LocalDate, dateFormat: DateTimeFormat<LocalDate>, textAlign: TextAlign) {
+internal fun DateCell(date: LocalDate, dateFormat: DateTimeFormat<LocalDate>, textAlign: TextAlign) {
     Text(dateFormat.format(date), defaultCellModifier, textAlign = textAlign)
 }
 
 @Composable
-fun CheckboxCell(selected: Boolean, onClick: (Boolean) -> Unit) {
+internal fun CheckboxCell(selected: Boolean, onClick: (Boolean) -> Unit) {
     Checkbox(selected, onClick, Modifier.background(Color.White))
 }
 
 @Composable
-fun <T, S : Comparable<S>> DropdownCell(
+internal fun <T, S : Comparable<S>> DropdownCell(
     spec: DropdownColumnSpec<T, S>,
     rowData: T,
 ) {
