@@ -5,25 +5,25 @@ import androidx.compose.ui.unit.Dp
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
 
-sealed class WidthSetting {
-    class Static(val width: Dp) : WidthSetting()
-    data object WrapContent : WidthSetting()
-    class Flex(val weight: Float): WidthSetting()
+public sealed class WidthSetting {
+    public class Static(public val width: Dp) : WidthSetting()
+    public data object WrapContent : WidthSetting()
+    public class Flex(public val weight: Float): WidthSetting()
 }
 
-sealed class ColumnSpec<T, S: Comparable<S>>(
-    val headerName: String,
-    val widthSetting: WidthSetting,
-    val valueSelector: (T) -> S,
-    val horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+public sealed class ColumnSpec<T, S: Comparable<S>>(
+    public val headerName: String,
+    public val widthSetting: WidthSetting,
+    public val valueSelector: (T) -> S,
+    public val horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
 ) {
     // Right now, the only reason to copy a ColumnSpec is to modify the widthSetting, thus it's the
     // only parameter of the function, so the code isn't overloaded with boilerplate code of
     // complete copying of an instance
-    abstract fun copy(widthSetting: WidthSetting): ColumnSpec<T, S>
+    public abstract fun copy(widthSetting: WidthSetting): ColumnSpec<T, S>
 }
 
-class TextColumnSpec<T>(
+public class TextColumnSpec<T>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> String
@@ -34,11 +34,11 @@ class TextColumnSpec<T>(
     }
 }
 
-class IntColumnSpec<T>(
+public class IntColumnSpec<T>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> Int,
-    val numberFormat: String? = null,
+    public val numberFormat: String? = null,
 ) : ColumnSpec<T, Int>(headerName, widthSetting, valueSelector, Arrangement.End) {
 
     override fun copy(widthSetting: WidthSetting): ColumnSpec<T, Int> {
@@ -46,11 +46,11 @@ class IntColumnSpec<T>(
     }
 }
 
-class DoubleColumnSpec<T>(
+public class DoubleColumnSpec<T>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> Double,
-    val numberFormat: String? = null,
+    public val numberFormat: String? = null,
 ): ColumnSpec<T, Double>(headerName, widthSetting, valueSelector, Arrangement.End) {
 
     override fun copy(widthSetting: WidthSetting): ColumnSpec<T, Double> {
@@ -59,11 +59,11 @@ class DoubleColumnSpec<T>(
 }
 
 
-class DateColumnSpec<T>(
+public class DateColumnSpec<T>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> LocalDate,
-    val dateFormat: DateTimeFormat<LocalDate> = LocalDate.Formats.ISO,
+    public val dateFormat: DateTimeFormat<LocalDate> = LocalDate.Formats.ISO,
     ) : ColumnSpec<T, LocalDate>(headerName, widthSetting, valueSelector, Arrangement.Start) {
 
     override fun copy(widthSetting: WidthSetting): ColumnSpec<T, LocalDate> {
@@ -72,7 +72,7 @@ class DateColumnSpec<T>(
 
 }
 
-class CheckboxColumnSpec<T>(
+public class CheckboxColumnSpec<T>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> Boolean,
@@ -83,13 +83,13 @@ class CheckboxColumnSpec<T>(
     }
 }
 
-class DropdownColumnSpec<T, S: Comparable<S>>(
+public class DropdownColumnSpec<T, S: Comparable<S>>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> S,
-    val valueFormatter: (S) -> String = { it.toString() },
-    val choices: List<S>,
-    val onChoicePicked: (S) -> Unit
+    public val valueFormatter: (S) -> String = { it.toString() },
+    public val choices: List<S>,
+    public val onChoicePicked: (S) -> Unit
 ) : ColumnSpec<T, S>(headerName, widthSetting, valueSelector) {
 
     override fun copy(widthSetting: WidthSetting): ColumnSpec<T, S> {

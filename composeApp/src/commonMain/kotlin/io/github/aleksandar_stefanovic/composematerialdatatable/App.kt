@@ -35,67 +35,91 @@ import androidx.compose.ui.unit.times
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-enum class SampleState {
-    INACTIVE, ACTIVE, PAUSED
+private enum class Genre(val stringValue: String) {
+    ACTION("Action"), DRAMA("Drama"), ADVENTURE("Adventure"),
+    CRIME("Crime"), SCI_FI("Science Fiction")
 }
 
-data class SampleDataClass(
-    val aString: String,
-    val aInt: Int,
-    val aFloat: Double,
-    val aDouble: Double,
-    val aDate: LocalDate,
-    val aBoolean: Boolean,
-    val aEnum: SampleState
+// Sample data, should be migrated somewhere else at some point
+private data class Movie(
+    val title: String,
+    val releaseDate: LocalDate,
+    val rating: Double,
+    val genre: Genre,
+    val watched: Boolean,
+    val awardCount: Int
 )
 
-val sampleData = listOf(
-    SampleDataClass(
-        "First entry",
-        1,
-        1.23,
-        4.56,
-        LocalDate(2021, 1, 20),
-        true,
-        SampleState.PAUSED
+private val movies = listOf(
+    Movie(
+        title = "Guardians of the API",
+        releaseDate = LocalDate(2014, 8, 1),
+        rating = 8.0,
+        genre = Genre.ACTION,
+        watched = true,
+        awardCount = 52
     ),
-    SampleDataClass(
-        "Second entry",
-        2,
-        7.89,
-        0.12,
-        LocalDate(2025, 12, 28),
-        false,
-        SampleState.ACTIVE
+    Movie(
+        title = "Compose Club",
+        releaseDate = LocalDate(1999, 10, 15),
+        rating = 8.8,
+        genre = Genre.DRAMA,
+        watched = true,
+        awardCount = 11
     ),
-    SampleDataClass(
-        "Third entry",
-        3,
-        3.45,
-        6.78,
-        LocalDate(2024, 5, 15),
-        true,
-        SampleState.INACTIVE
+    Movie(
+        title = "Jetpack to the Future",
+        releaseDate = LocalDate(1985, 7, 3),
+        rating = 8.5,
+        genre = Genre.ADVENTURE,
+        watched = true,
+        awardCount = 19
+    ),
+    Movie(
+        title = "Runtime Fiction",
+        releaseDate = LocalDate(1994, 10, 14),
+        rating = 8.9,
+        genre = Genre.CRIME,
+        watched = false,
+        awardCount = 70
+    ),
+    Movie(
+        title = "The Layout Matrix",
+        releaseDate = LocalDate(1999, 3, 31),
+        rating = 8.7,
+        genre = Genre.SCI_FI,
+        watched = true,
+        awardCount = 46
+    ),
+    Movie(
+        title = "Exception: Impossible",
+        releaseDate = LocalDate(1996, 5, 22),
+        rating = 7.1,
+        genre = Genre.ACTION,
+        watched = false,
+        awardCount = 11
     )
 )
 
+
 @Composable
 @Preview
-fun App(modifier: Modifier = Modifier) {
+internal fun App(modifier: Modifier = Modifier) {
     MaterialTheme {
-        val columnSpecs = listOf<ColumnSpec<SampleDataClass, *>>(
-            TextColumnSpec("Text", WidthSetting.WrapContent) { it.aString },
-            IntColumnSpec("Int", WidthSetting.WrapContent, { it.aInt }),
-            DateColumnSpec("Date", WidthSetting.WrapContent, { it.aDate }),
-            DoubleColumnSpec("Double", WidthSetting.WrapContent, valueSelector = { it.aDouble }),
-            DropdownColumnSpec("Dropdown", WidthSetting.WrapContent, { it.aEnum }, {
-                when (it) {
-                    SampleState.INACTIVE -> "Inactive"
-                    SampleState.ACTIVE -> "Active"
-                    SampleState.PAUSED -> "Paused"
-                }
-            }, listOf(SampleState.ACTIVE, SampleState.PAUSED, SampleState.INACTIVE), {}),
-            CheckboxColumnSpec("Checkbox", WidthSetting.WrapContent) { it.aBoolean }
+        val columnSpecs = listOf<ColumnSpec<Movie, *>>(
+            TextColumnSpec("Title", WidthSetting.WrapContent) { it.title },
+            DateColumnSpec("Release Date", WidthSetting.WrapContent, { it.releaseDate }),
+            DoubleColumnSpec("Rating", WidthSetting.WrapContent, valueSelector = { it.rating }),
+            IntColumnSpec("Awards", WidthSetting.WrapContent, { it.awardCount }),
+            DropdownColumnSpec(
+                "Genre",
+                WidthSetting.WrapContent,
+                { it.genre },
+                { it.stringValue },
+                Genre.entries.toList(),
+                onChoicePicked = {}
+            ),
+            CheckboxColumnSpec("Watched", WidthSetting.WrapContent) { it.watched }
         )
 
         Column(modifier) {
@@ -103,7 +127,7 @@ fun App(modifier: Modifier = Modifier) {
 
             Table(
                 columnSpecs,
-                sampleData,
+                movies,
                 modifier = Modifier.padding(20.dp),
                 showSelectionColumn = true,
                 onSelectionChange = { list -> selectedCount = list.size }
@@ -117,12 +141,12 @@ fun App(modifier: Modifier = Modifier) {
     }
 }
 
-enum class SortOrder {
+internal enum class SortOrder {
     ASC, DESC
 }
 
 @Composable
-fun <T> Table(
+public fun <T> Table(
     columnSpecs: List<ColumnSpec<T, *>>,
     data: List<T>,
     modifier: Modifier = Modifier,
@@ -161,13 +185,13 @@ fun <T> Table(
         }
     }
 
-    var filters: List<ColumnFilter<T>> by remember { mutableStateOf(emptyList()) }
+    var filters: List<ColumnFilter<T, *>> by remember { mutableStateOf(emptyList()) }
 
     val filteredSortedData by remember(data, filters, sortedColumnSpec) {
         derivedStateOf {
             // This is kinda inefficient, since the list is traversed for each filter, instead of just once
-            val filteredData = filters.fold(data) { data: List<T>, filter ->
-                filter.filter(data)
+            val filteredData = data.filter { item ->
+                filters.all { it.test(item) }
             }
 
             if (sortedColumnSpec != null) {
@@ -274,12 +298,7 @@ fun <T> Table(
             Modifier.fillMaxWidth().background(Color.White),
             columnSpecsNormalized,
             filters,
-            onFilterConfirm = { columnSpec, predicate, searchTerm ->
-                filters += when (columnSpec) {
-                    is TextColumnSpec -> StringFilter(columnSpec, predicate, searchTerm)
-                    else -> TODO()
-                }
-            },
+            onFilterConfirm = { filters += it },
             onRemoveFilter = { filters -= it }
         )
 

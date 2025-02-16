@@ -32,7 +32,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
 
 @Composable
-fun TextHeader(
+internal fun TextHeader(
     headerText: String,
     horizontalArrangement: Arrangement.Horizontal,
     sortOrder: SortOrder? = null,

@@ -1,16 +1,17 @@
 package io.github.aleksandar_stefanovic.composematerialdatatable
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 
-fun LocalDate.now(): LocalDate {
-    val instant = Clock.System.now()
-    val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    return LocalDate(
-        localDateTime.year,
-        localDateTime.month,
-        localDateTime.dayOfMonth
-    )
+internal inline fun Modifier.onEnterPress(crossinline action: () -> Unit): Modifier {
+    return this.onKeyEvent { event ->
+        if (event.key == Key.Enter) {
+            action()
+            return@onKeyEvent true
+        } else {
+            return@onKeyEvent false
+        }
+    }
 }
