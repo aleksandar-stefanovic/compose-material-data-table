@@ -8,8 +8,7 @@ reference for common and expected functionalities.
 Right now, it works on Desktop and Android, while the Kotlin/Wasm has partial support — it is 
 limited by Kotlin/Wasm not having support for number formatting, but it works otherwise.
 
-![image](https://github.com/user-attachments/assets/6dbf39d9-f56a-4d3f-b344-0461c5199200)
-
+![image](https://github.com/user-attachments/assets/69b8b247-9e0c-4b17-a56c-6f8acec34e86)
 
 # Implemented features
 - Column width settings
@@ -22,11 +21,12 @@ limited by Kotlin/Wasm not having support for number formatting, but it works ot
   - Int
   - Double
   - Date
+  - Dropdown (specific set of values)
   - Checkbox (Boolean)
 - Column aligning
 - Text selection (works but selecting multiple cells at once just concatenates them without whitespace)
 - Toggleable selection column (first column with tri-state checkbox header and checkbox cells, which emits events on interaction)
-- Filtering (right now, only Text column type is supported)
+- Filtering (right now, Text, Int and Double column types are supported)
 
 # Planned features
 - Full implementation of the Material Data Table spec
@@ -36,7 +36,6 @@ limited by Kotlin/Wasm not having support for number formatting, but it works ot
   - Row hover color change
 - Figure out how to publish this as a package, and a Gradle dependency that can be used within other projects.
 - Column types
-  - Dropdown (specific set of values)
   - Chips (like dropdown, but can have multiple values)
   - Custom (you provide the Composable for the cell)
 - Scrolling
@@ -44,7 +43,7 @@ limited by Kotlin/Wasm not having support for number formatting, but it works ot
   - Horizontal
 - Pagination
 - Lazy loading
-- Filtering
+- Filtering of Date, Dropdown and Checkbox columns
 - Improved text selection (with dividers between cells)
 - Searching
 - Dark variant
