@@ -1,4 +1,8 @@
-package io.github.aleksandar_stefanovic.composematerialdatatable
+package io.github.aleksandar_stefanovic.composematerialdatatable.filter
+
+import io.github.aleksandar_stefanovic.composematerialdatatable.CheckboxColumnSpec
+import io.github.aleksandar_stefanovic.composematerialdatatable.ColumnSpec
+import io.github.aleksandar_stefanovic.composematerialdatatable.TextColumnSpec
 
 // A single predicate enum for all types of filters, a single enum can be applicable to multiple
 // types, for example, "IS" works on all scalar types
@@ -14,7 +18,10 @@ internal enum class FilterPredicate(val verb: String) {
     GREATER_THAN_EQUALS("greater or equal than"),
     LESS_THAN("less than"),
     LESS_THAN_EQUALS("less or equal than"),
-    BETWEEN("between")
+    BETWEEN("between"),
+
+    SELECTED("selected"),
+    NOT_SELECTED("not selected")
 }
 
 internal abstract class ColumnFilter<T, S : Comparable<S>>(val columnSpec: ColumnSpec<T, S>) {
@@ -76,5 +83,26 @@ internal class NumberFilter<T, S>(
             FilterPredicate.BETWEEN -> "${columnSpec.headerName} is between ${parameters[0]} and ${parameters[1]}"
             else -> throw Error("Filter predicate ${predicate.verb} is not supported")
         }
+
+}
+
+internal class BooleanFilter<T>(
+    columnSpec: CheckboxColumnSpec<T>,
+    private val predicate: FilterPredicate
+) : ColumnFilter<T, Boolean>(columnSpec) {
+    override fun test(item: T): Boolean {
+        val selected = columnSpec.valueSelector(item)
+        return when (predicate) {
+            FilterPredicate.SELECTED -> selected
+            FilterPredicate.NOT_SELECTED -> !selected
+            else -> throw Error("Filter predicate ${predicate.verb} is not supported")
+        }
+    }
+
+    override val label: String = when (predicate) {
+        FilterPredicate.SELECTED,
+        FilterPredicate.NOT_SELECTED -> "${columnSpec.headerName} is ${predicate.verb}"
+        else -> throw Error("Filter predicate ${predicate.verb} is not supported")
+    }
 
 }
