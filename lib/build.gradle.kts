@@ -13,6 +13,7 @@ plugins {
 }
 
 version = "0.1.0"
+group = "io.github.aleksandar-stefanovic"
 
 kotlin {
 
