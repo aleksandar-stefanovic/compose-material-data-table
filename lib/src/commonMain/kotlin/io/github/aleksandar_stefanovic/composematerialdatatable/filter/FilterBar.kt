@@ -19,9 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import composematerialdatatable.lib.generated.resources.Res
-import composematerialdatatable.lib.generated.resources.close
-import composematerialdatatable.lib.generated.resources.filter_list
 import io.github.aleksandar_stefanovic.composematerialdatatable.CheckboxColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.ColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.DateColumnSpec
@@ -29,6 +26,9 @@ import io.github.aleksandar_stefanovic.composematerialdatatable.DoubleColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.DropdownColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.IntColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.TextColumnSpec
+import io.github.aleksandar_stefanovic.lib.generated.resources.Res
+import io.github.aleksandar_stefanovic.lib.generated.resources.close
+import io.github.aleksandar_stefanovic.lib.generated.resources.filter_list
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable

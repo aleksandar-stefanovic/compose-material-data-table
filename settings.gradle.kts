@@ -1,4 +1,4 @@
-rootProject.name = "ComposeMaterialDataTable"
+rootProject.name = "composematerialdatatable"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
