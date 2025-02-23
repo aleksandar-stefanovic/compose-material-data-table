@@ -6,4 +6,6 @@ plugins {
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
+    // Recommended by https://github.com/kotlin-hands-on/fibonacci
+    alias(libs.plugins.vanniktechMavenPublish)
 }

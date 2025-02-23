@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
@@ -7,7 +8,11 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    // Recommended by https://github.com/kotlin-hands-on/fibonacci
+    alias(libs.plugins.vanniktechMavenPublish)
 }
+
+version = "0.1.0"
 
 kotlin {
 
@@ -86,5 +91,39 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    signAllPublications()
+
+    coordinates(group.toString(), "composematerialdatatable", version.toString())
+
+    pom {
+        name = "Compose Material Data Table"
+        description = "A Kotlin Multiplatform and Jetpack Compose Multiplatform compliant implementation of the Material 2 Data Table."
+        inceptionYear = "2025"
+        url = "https://github.com/aleksandar-stefanovic/compose-material-data-table"
+        licenses {
+            license {
+                name = "MIT License"
+                url = "http://www.opensource.org/licenses/mit-license.php"
+                distribution = "http://www.opensource.org/licenses/mit-license.php"
+            }
+        }
+        developers {
+            developer {
+                id = "aleksandar-stefanovic"
+                name = "Aleksandar Stefanović"
+                url = "https://github.com/aleksandar-stefanovic"
+            }
+        }
+        scm {
+            url = "https://github.com/aleksandar-stefanovic/compose-material-data-table"
+            connection = "scm:git:git://github.com/aleksandar-stefanovic/compose-material-data-table.git"
+            developerConnection = "scm:git:ssh://git@github.com/aleksandar-stefanovic/compose-material-data-table.git"
+        }
     }
 }
