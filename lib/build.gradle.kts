@@ -100,7 +100,7 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(group.toString(), "composematerialdatatable", version.toString())
+    coordinates("io.github.aleksandar-stefanovic", "composematerialdatatable", version.toString())
 
     pom {
         name = "Compose Material Data Table"
