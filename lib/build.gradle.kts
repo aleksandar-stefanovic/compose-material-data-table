@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.vanniktechMavenPublish)
 }
 
-version = "0.1.0"
+version = "0.1.2"
 group = "io.github.aleksandar-stefanovic"
 
 kotlin {
@@ -100,7 +100,7 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates("io.github.aleksandar-stefanovic", "composematerialdatatable", version.toString())
+    coordinates(group.toString(), "composematerialdatatable", version.toString())
 
     pom {
         name = "Compose Material Data Table"
