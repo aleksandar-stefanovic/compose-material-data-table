@@ -5,10 +5,8 @@
 The project aims to create a Jetpack Compose data table with MUI Data Grid serving as a
 reference for common and expected functionalities.
 
-Right now, it works on Desktop and Android, while the Kotlin/Wasm has partial support — it is 
-limited by Kotlin/Wasm not having support for number formatting, but it works otherwise.
+![image](https://github.com/user-attachments/assets/99371b95-2239-4660-a539-67c96071e576)
 
-![image](https://github.com/user-attachments/assets/69b8b247-9e0c-4b17-a56c-6f8acec34e86)
 
 # Setup
 ## Using `libs.versions.toml`
@@ -42,7 +40,6 @@ kotlin {
 }
 ```
 
-
 # Implemented features
 - Column width settings
   - Fixed — the column with use the specified width
@@ -61,101 +58,10 @@ kotlin {
 - Toggleable selection column (first column with tri-state checkbox header and checkbox cells, which emits events on interaction)
 - Filtering (right now, Text, Int and Double column types are supported)
 
-# Planned features
-- Full implementation of the Material Data Table spec
-  - 4dp corner radius
-  - Text longer than available space should be truncated, with preview on hover
-  - Correct arrow icons
-  - Row hover color change
-- Column types
-  - Chips (like dropdown, but can have multiple values)
-  - Custom (you provide the Composable for the cell)
-- Scrolling
-  - Vertical
-  - Horizontal
-- Pagination
-- Lazy loading
-- Filtering of Date, Dropdown and Checkbox columns
-- Improved text selection (with dividers between cells)
-- Searching
-- Dark variant
-- Theming
-- Condensed variant (less padding and no minimum size requirements)
-- Selection
-- Editing
-- Expandable rows
-- Animations
-- RTL text support
-- Keyboard support
-- Measure performance, and ensure that there are no performance pitfalls
+For the planned features, see [Issues](https://github.com/aleksandar-stefanovic/compose-material-data-table/issues).
 
-### Example
-```kotlin
-data class SampleDataClass(
-    val aString: String,
-    val aInt: Int,
-    val aFloat: Double,
-    val aDouble: Double,
-    val aDate: LocalDate,
-    val aBoolean: Boolean
-)
+## Supported platforms
+Right now, it is tested and working on Desktop and Android, while the Kotlin/Wasm has partial support — it is limited by Kotlin/Wasm not having support for number formatting, but it works otherwise. Please create an issue or a pull request if you'd like to have this project supported on other platforms.
 
-val sampleData = listOf(
-    SampleDataClass(
-        "First entry",
-        1,
-        1.23,
-        4.56,
-        LocalDate(2021, 1, 20),
-        true
-    ),
-    SampleDataClass(
-        "Second entry",
-        2,
-        7.89,
-        0.12,
-        LocalDate(2025, 12, 28),
-        false
-    ),
-    SampleDataClass(
-        "Third entry",
-        3,
-        3.45,
-        6.78,
-        LocalDate(2024, 5, 15),
-        true
-    )
-)
-
-@Composable
-@Preview
-fun App(tableModifier: Modifier = Modifier) {
-    MaterialTheme {
-        val columnSpecs = listOf<ColumnSpec<SampleDataClass, *>>(
-            TextColumnSpec("Text", WidthSetting.WrapContent) { it.aString },
-            IntColumnSpec("Int", WidthSetting.WrapContent, { it.aInt }),
-            DateColumnSpec("Date", WidthSetting.WrapContent, { it.aDate }, "MM/dd/YYYY"),
-            DoubleColumnSpec("Double", WidthSetting.WrapContent, valueSelector = { it.aDouble }),
-            CheckboxColumnSpec("Checkbox", WidthSetting.WrapContent) { it.aBoolean }
-        )
-
-        Column {
-
-            var selectedCount by remember { mutableStateOf(0) }
-
-            Table(
-                columnSpecs,
-                sampleData,
-                modifier = tableModifier.padding(20.dp),
-                showSelectionColumn = true,
-                onSelectionChange = { list -> selectedCount = list.size }
-            )
-
-            if (selectedCount > 0) {
-                Text("Selected: $selectedCount")
-            }
-
-        }
-    }
-}
-```
+# Example
+Gradle submodule `sample` contains a working example of the `Table` implementation, see [Sample App.kt](https://github.com/aleksandar-stefanovic/compose-material-data-table/blob/main/sample/src/commonMain/kotlin/io/github/aleksandar_stefanovic/composematerialdatatable/App.kt).
