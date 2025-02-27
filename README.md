@@ -1,14 +1,47 @@
-A Kotlin Multiplatform and Jetpack Compose Multiplatform compliant implementation of the [Material 2 Data Table](https://m2.material.io/components/data-tables).
+![maven central version](https://img.shields.io/maven-central/v/io.github.aleksandar-stefanovic/composematerialdatatable)
+
+### A Kotlin & Jetpack Compose Multiplatform compliant implementation of the [Material 2 Data Table](https://m2.material.io/components/data-tables).
 
 The project aims to create a Jetpack Compose data table with MUI Data Grid serving as a
 reference for common and expected functionalities.
-
-## 🚧 Converting this project into a library and publishing it on Maven Central is currently underway.
 
 Right now, it works on Desktop and Android, while the Kotlin/Wasm has partial support — it is 
 limited by Kotlin/Wasm not having support for number formatting, but it works otherwise.
 
 ![image](https://github.com/user-attachments/assets/69b8b247-9e0c-4b17-a56c-6f8acec34e86)
+
+# Setup
+## Using `libs.versions.toml`
+To add the dependency to your Kotlin Multiplatform project, open the `build.gradle.kts` of your shared module, then
+```kts
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.composematerialdatatable)
+        }
+    }
+}
+```
+and, in your `libs.versions.toml`, add:
+```toml
+composematerialdatatable = "0.1.0"
+
+[libraries]
+composematerialdatatable = { module = "io.github.aleksandar-stefanovic:composematerialdatatable", version.ref = "composematerialdatatable" }
+```
+
+## Using direct dependency notation
+
+```kts
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.aleksandar-stefanovic:composematerialdatatable:0.1.0")
+        }
+    }
+}
+```
+
 
 # Implemented features
 - Column width settings
@@ -34,7 +67,6 @@ limited by Kotlin/Wasm not having support for number formatting, but it works ot
   - Text longer than available space should be truncated, with preview on hover
   - Correct arrow icons
   - Row hover color change
-- Figure out how to publish this as a package, and a Gradle dependency that can be used within other projects.
 - Column types
   - Chips (like dropdown, but can have multiple values)
   - Custom (you provide the Composable for the cell)
@@ -127,7 +159,3 @@ fun App(tableModifier: Modifier = Modifier) {
     }
 }
 ```
-
-In both of those cases, there is (currently) no additional logic for covering the case where there
-isn't enough space for completely displaying all columns, and they will be simply visually cut-off.
-To work around this, you can provide a scrollable container for the Table composable.
