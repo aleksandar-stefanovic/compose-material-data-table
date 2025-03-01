@@ -90,7 +90,11 @@ internal fun <T> FilterBar(
                     onClose = { showFilterSetup = false }
                 )
 
-                is DateColumnSpec -> TODO()
+                is DateColumnSpec -> DateFilterModal(
+                    (selectedColumnSpec as DateColumnSpec<T>),
+                    onFilterConfirm,
+                    onClose = { showFilterSetup = false }
+                )
                 is DropdownColumnSpec -> TODO()
             }
         }

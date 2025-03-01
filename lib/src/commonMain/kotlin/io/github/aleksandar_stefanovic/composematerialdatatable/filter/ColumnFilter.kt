@@ -2,7 +2,9 @@ package io.github.aleksandar_stefanovic.composematerialdatatable.filter
 
 import io.github.aleksandar_stefanovic.composematerialdatatable.CheckboxColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.ColumnSpec
+import io.github.aleksandar_stefanovic.composematerialdatatable.DateColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.TextColumnSpec
+import kotlinx.datetime.LocalDate
 
 // A single predicate enum for all types of filters, a single enum can be applicable to multiple
 // types, for example, "IS" works on all scalar types
@@ -104,5 +106,30 @@ internal class BooleanFilter<T>(
         FilterPredicate.NOT_SELECTED -> "${columnSpec.headerName} is ${predicate.verb}"
         else -> throw Error("Filter predicate ${predicate.verb} is not supported")
     }
+}
 
+internal class DateFilter<T>(
+    columnSpec: DateColumnSpec<T>,
+    private val predicate: FilterPredicate,
+    private val value: LocalDate
+) : ColumnFilter<T, LocalDate>(columnSpec) {
+    override fun test(item: T): Boolean {
+        val selected = columnSpec.valueSelector(item)
+        return when (predicate) {
+            FilterPredicate.IS -> selected == value
+            FilterPredicate.GREATER_THAN -> selected > value
+            FilterPredicate.LESS_THAN -> selected < value
+            else -> throw Error("Filter predicate ${predicate.verb} is not supported")
+        }
+    }
+
+    override val label: String by lazy {
+        val formattedValue = columnSpec.dateFormat.format(value)
+        when (predicate) {
+            FilterPredicate.IS -> "${columnSpec.headerName} is $formattedValue"
+            FilterPredicate.GREATER_THAN -> "${columnSpec.headerName} is after $formattedValue"
+            FilterPredicate.LESS_THAN -> "${columnSpec.headerName} is before $formattedValue"
+            else -> throw Error("Filter predicate ${predicate.verb} is not supported")
+        }
+    }
 }
