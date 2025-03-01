@@ -3,7 +3,9 @@ package io.github.aleksandar_stefanovic.composematerialdatatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
@@ -157,7 +159,7 @@ public fun <T> Table(
         // One lambda per row (will become List<List<Measurable>> in the Layout composable)
         return@map {
             if (showSelectionColumn) {
-                CheckboxCell(rowData in selectedData) { onBodySelectionClick(rowData) } // TODO
+                CheckboxCell(rowData in selectedData) { onBodySelectionClick(rowData) }
             }
             columnSpecsNormalized.forEach { columnSpec ->
 
@@ -183,7 +185,7 @@ public fun <T> Table(
     // TODO headers should not figure into the column width, text should be truncated instead
     val headerAndBodyRowComposables: List<@Composable () -> Unit> = listOf(headerRowComposableLambda) + composableLambdasByRow
 
-    Column(modifier.clip(RoundedCornerShape(4.dp)).background(Color(0x1f000000))) {
+    Column(modifier.clip(RoundedCornerShape(4.dp)).width(IntrinsicSize.Max).background(Color(0x1f000000))) {
 
         FilterBar(
             Modifier.fillMaxWidth().background(Color.White),
@@ -352,12 +354,13 @@ public fun <T> Table(
                                         val cIndex =
                                             if (showSelectionColumn) colIndex + 1 else colIndex
                                         val measurable = measurables[cIndex]
-                                        measurable.minIntrinsicWidth(rowHeight)
+                                        measurable.maxIntrinsicWidth(rowHeight)
                                     }.max() // Return the biggest intrinsic width
                                 }
                             }
                         }
-                        return widths.sum()
+                        // TODO 50 is a magic constant
+                        return widths.sum() + if (showSelectionColumn) 50.dp.roundToPx() else 0
                     }
                 }
             )

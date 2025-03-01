@@ -83,7 +83,7 @@ private val movies = listOf(
 
 @Composable
 @Preview
-internal fun App(modifier: Modifier = Modifier) {
+internal fun App() {
     MaterialTheme {
         val columnSpecs = listOf<ColumnSpec<Movie, *>>(
             TextColumnSpec("Title", WidthSetting.WrapContent) { it.title },
@@ -101,7 +101,7 @@ internal fun App(modifier: Modifier = Modifier) {
             CheckboxColumnSpec("Watched", WidthSetting.WrapContent) { it.watched }
         )
 
-        Column(modifier) {
+        Column {
             var selectedCount by remember { mutableStateOf(0) }
 
             Table(
