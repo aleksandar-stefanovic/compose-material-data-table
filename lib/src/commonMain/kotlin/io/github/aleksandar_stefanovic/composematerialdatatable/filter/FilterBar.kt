@@ -67,35 +67,63 @@ internal fun <T> FilterBar(
 
             when (selectedColumnSpec!!) {
                 is TextColumnSpec -> TextFilterModal(
-                    (selectedColumnSpec as TextColumnSpec<T>),
-                    onFilterConfirm,
+                    selectedColumnSpec as TextColumnSpec<T>,
+                    onFilterConfirm = { columnFilter ->
+                        showFilterSetup = false
+                        showFilterPicker = false
+                        onFilterConfirm(columnFilter)
+                    },
                     onClose = { showFilterSetup = false }
                 )
 
                 is IntColumnSpec -> IntFilterModal(
-                    (selectedColumnSpec as IntColumnSpec<T>),
-                    onFilterConfirm,
+                    selectedColumnSpec as IntColumnSpec<T>,
+                    onFilterConfirm = { columnFilter ->
+                        showFilterSetup = false
+                        showFilterPicker = false
+                        onFilterConfirm(columnFilter)
+                    },
                     onClose = { showFilterSetup = false }
                 )
 
                 is DoubleColumnSpec -> DoubleFilterModal(
-                    (selectedColumnSpec as DoubleColumnSpec<T>),
-                    onFilterConfirm,
+                    selectedColumnSpec as DoubleColumnSpec<T>,
+                    onFilterConfirm = { columnFilter ->
+                        showFilterSetup = false
+                        showFilterPicker = false
+                        onFilterConfirm(columnFilter)
+                    },
                     onClose = { showFilterSetup = false }
                 )
 
                 is CheckboxColumnSpec -> CheckboxFilterModal(
-                    (selectedColumnSpec as CheckboxColumnSpec<T>),
-                    onFilterConfirm,
+                    selectedColumnSpec as CheckboxColumnSpec<T>,
+                    onFilterConfirm = { columnFilter ->
+                        showFilterSetup = false
+                        showFilterPicker = false
+                        onFilterConfirm(columnFilter)
+                    },
                     onClose = { showFilterSetup = false }
                 )
 
                 is DateColumnSpec -> DateFilterModal(
-                    (selectedColumnSpec as DateColumnSpec<T>),
-                    onFilterConfirm,
+                    selectedColumnSpec as DateColumnSpec<T>,
+                    onFilterConfirm = { columnFilter ->
+                        showFilterSetup = false
+                        showFilterPicker = false
+                        onFilterConfirm(columnFilter)
+                    },
                     onClose = { showFilterSetup = false }
                 )
-                is DropdownColumnSpec -> TODO()
+                is DropdownColumnSpec -> DropdownFilterModal(
+                    selectedColumnSpec as DropdownColumnSpec<T, *>,
+                    onFilterConfirm = { columnFilter ->
+                        showFilterSetup = false
+                        showFilterPicker = false
+                        onFilterConfirm(columnFilter)
+                    },
+                    onClose = { showFilterSetup = false }
+                )
             }
         }
 

@@ -3,6 +3,7 @@ package io.github.aleksandar_stefanovic.composematerialdatatable.filter
 import io.github.aleksandar_stefanovic.composematerialdatatable.CheckboxColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.ColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.DateColumnSpec
+import io.github.aleksandar_stefanovic.composematerialdatatable.DropdownColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.TextColumnSpec
 import kotlinx.datetime.LocalDate
 
@@ -23,7 +24,10 @@ internal enum class FilterPredicate(val verb: String) {
     BETWEEN("between"),
 
     SELECTED("selected"),
-    NOT_SELECTED("not selected")
+    NOT_SELECTED("not selected"),
+
+    IS_ANY_OF("is any of"),
+    IS_NONE_OF("is none of")
 }
 
 internal abstract class ColumnFilter<T, S : Comparable<S>>(val columnSpec: ColumnSpec<T, S>) {
@@ -129,6 +133,31 @@ internal class DateFilter<T>(
             FilterPredicate.IS -> "${columnSpec.headerName} is $formattedValue"
             FilterPredicate.GREATER_THAN -> "${columnSpec.headerName} is after $formattedValue"
             FilterPredicate.LESS_THAN -> "${columnSpec.headerName} is before $formattedValue"
+            else -> throw Error("Filter predicate ${predicate.verb} is not supported")
+        }
+    }
+}
+
+internal class DropdownFilter<T, S: Comparable<S>>(
+    columnSpec: DropdownColumnSpec<T, S>,
+    private val predicate: FilterPredicate,
+    private val values: List<S>
+) : ColumnFilter<T, S>(columnSpec) {
+
+    override fun test(item: T): Boolean {
+        val value = columnSpec.valueSelector(item)
+        return when (predicate) {
+            FilterPredicate.IS_ANY_OF -> value in values
+            FilterPredicate.IS_NONE_OF -> value !in values
+            else -> throw Error("Filter predicate ${predicate.verb} is not supported")
+        }
+    }
+
+    override val label: String by lazy {
+        val valueList = values.map { columnSpec.valueFormatter(it) }.joinToString(", ")
+        when (predicate) {
+            FilterPredicate.IS_ANY_OF -> "${columnSpec.headerName} is any of $valueList"
+            FilterPredicate.IS_NONE_OF -> "${columnSpec.headerName} is none of $valueList"
             else -> throw Error("Filter predicate ${predicate.verb} is not supported")
         }
     }
