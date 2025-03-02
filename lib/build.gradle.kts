@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.vanniktechMavenPublish)
 }
 
-version = "0.1.2"
+version = "1.1.0"
 group = "io.github.aleksandar-stefanovic"
 
 kotlin {

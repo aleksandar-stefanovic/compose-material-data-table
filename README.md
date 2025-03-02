@@ -5,8 +5,7 @@
 The project aims to create a Jetpack Compose data table with MUI Data Grid serving as a
 reference for common and expected functionalities.
 
-![image](https://github.com/user-attachments/assets/99371b95-2239-4660-a539-67c96071e576)
-
+![image](https://github.com/user-attachments/assets/2893091e-d1e0-431b-9614-a5a8cfa557ed)
 
 # Setup
 ## Using `libs.versions.toml`

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -45,6 +46,9 @@ public fun <T> Table(
     modifier: Modifier = Modifier,
     showSelectionColumn: Boolean = false,
     onSelectionChange: (Set<T>) -> Unit = {},
+    showPaginationBar: Boolean = true,
+    pageSizeOptions: List<Int> = listOf(10, 25, 50, 100),
+    defaultPageSize: Int = 25
 ) {
     val totalFlexWeight =
         columnSpecs.map { it.widthSetting }.filterIsInstance<WidthSetting.Flex>().map { it.weight }
@@ -80,9 +84,13 @@ public fun <T> Table(
 
     var filters: List<ColumnFilter<T, *>> by remember { mutableStateOf(emptyList()) }
 
+    var paginationOffset: Int by remember { mutableStateOf(0) }
+    var paginationCount: Int? by remember {
+        mutableStateOf(if (showPaginationBar) defaultPageSize.coerceAtMost(data.size - 1) else null)
+    }
+
     val filteredSortedData by remember(data, filters, sortedColumnSpec) {
         derivedStateOf {
-            // This is kinda inefficient, since the list is traversed for each filter, instead of just once
             val filteredData = data.filter { item ->
                 filters.all { it.test(item) }
             }
@@ -100,6 +108,15 @@ public fun <T> Table(
                     }
                 }
             } else filteredData
+        }
+    }
+
+    val paginatedData by remember(filteredSortedData, paginationOffset, paginationCount) {
+        derivedStateOf {
+            return@derivedStateOf if (paginationCount != null) {
+                val lastIndex = (paginationOffset + paginationCount!!).coerceAtMost(filteredSortedData.size)
+                filteredSortedData.slice(paginationOffset..<lastIndex)
+            } else filteredSortedData
         }
     }
 
@@ -124,7 +141,7 @@ public fun <T> Table(
             selectedData = if (headerSelectionCheckboxState == ToggleableState.On) {
                 emptySet()
             } else {
-                filteredSortedData.toSet()
+                paginatedData.toSet()
             }
         }
     }
@@ -155,7 +172,7 @@ public fun <T> Table(
         }
     }
 
-    val composableLambdasByRow: List<@Composable () -> Unit> = filteredSortedData.map { rowData ->
+    val composableLambdasByRow: List<@Composable () -> Unit> = paginatedData.map { rowData ->
         // One lambda per row (will become List<List<Measurable>> in the Layout composable)
         return@map {
             if (showSelectionColumn) {
@@ -185,10 +202,10 @@ public fun <T> Table(
     // TODO headers should not figure into the column width, text should be truncated instead
     val headerAndBodyRowComposables: List<@Composable () -> Unit> = listOf(headerRowComposableLambda) + composableLambdasByRow
 
-    Column(modifier.clip(RoundedCornerShape(4.dp)).width(IntrinsicSize.Max).background(Color(0x1f000000))) {
+    Column(modifier.width(IntrinsicSize.Max)) {
 
         FilterBar(
-            Modifier.fillMaxWidth().background(Color.White),
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(4.dp, 4.dp)).background(Color(0x1f000000)).padding(1.dp, 1.dp, 1.dp, 0.dp).background(Color.White),
             columnSpecsNormalized,
             filters,
             onFilterConfirm = { filters += it },
@@ -198,6 +215,7 @@ public fun <T> Table(
         SelectionContainer {
             Layout(
                 headerAndBodyRowComposables,
+                modifier = Modifier.background(Color(0x1f000000)),
                 measurePolicy = object : MultiContentMeasurePolicy {
 
                     val totalColumnCount =
@@ -359,9 +377,22 @@ public fun <T> Table(
                                 }
                             }
                         }
-                        // TODO 50 is a magic constant
+                        // TODO 50 is a magic constant (to account for the selection column)
                         return widths.sum() + if (showSelectionColumn) 50.dp.roundToPx() else 0
                     }
+                }
+            )
+        }
+
+        if (showPaginationBar) {
+            PaginationBar(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(0.dp, 0.dp, 4.dp, 4.dp)).background(Color(0x1f000000)).padding(1.dp, 0.dp, 1.dp, 1.dp).background(Color.White),
+                filteredSortedData.size,
+                pageSizeOptions,
+                defaultPageSize,
+                onPaginationChanged = { offset, count ->
+                    paginationOffset = offset
+                    paginationCount = count
                 }
             )
         }
