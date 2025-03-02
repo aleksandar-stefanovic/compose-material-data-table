@@ -53,9 +53,10 @@ kotlin {
   - Dropdown (specific set of values)
   - Checkbox (Boolean)
 - Column aligning
-- Text selection (works but selecting multiple cells at once just concatenates them without whitespace)
+- Text selection (works but selecting multiple cells at once just concatenates them without whitespace at the moment)
 - Toggleable selection column (first column with tri-state checkbox header and checkbox cells, which emits events on interaction)
-- Filtering (right now, Text, Int and Double column types are supported)
+- Filtering
+- Client-based pagination
 
 For the planned features, see [Issues](https://github.com/aleksandar-stefanovic/compose-material-data-table/issues).
 
