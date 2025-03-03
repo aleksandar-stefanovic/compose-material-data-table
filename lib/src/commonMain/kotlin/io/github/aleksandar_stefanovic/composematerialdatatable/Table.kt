@@ -1,14 +1,13 @@
 package io.github.aleksandar_stefanovic.composematerialdatatable
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
@@ -17,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
@@ -202,10 +200,10 @@ public fun <T> Table(
     // TODO headers should not figure into the column width, text should be truncated instead
     val headerAndBodyRowComposables: List<@Composable () -> Unit> = listOf(headerRowComposableLambda) + composableLambdasByRow
 
-    Column(modifier.width(IntrinsicSize.Max)) {
+    Card(modifier.width(IntrinsicSize.Max), border = BorderStroke(1.dp, Color(0x1f000000))) {
 
         FilterBar(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(4.dp, 4.dp)).background(Color(0x1f000000)).padding(1.dp, 1.dp, 1.dp, 0.dp).background(Color.White),
+            Modifier.fillMaxWidth().background(Color.White),
             columnSpecsNormalized,
             filters,
             onFilterConfirm = { filters += it },
@@ -215,7 +213,7 @@ public fun <T> Table(
         SelectionContainer {
             Layout(
                 headerAndBodyRowComposables,
-                modifier = Modifier.background(Color(0x1f000000)),
+                modifier = Modifier.background(Color(0x0f000000)),
                 measurePolicy = object : MultiContentMeasurePolicy {
 
                     val totalColumnCount =
@@ -223,7 +221,6 @@ public fun <T> Table(
 
                     // By spec, it should be 1.dp, but it doesn't work as intended when converted to px, TODO find an elegant solution
                     val borderPx = 1
-                    val totalHorizontalPadding = 2 * borderPx
                     val totalVerticalPadding = (headerAndBodyRowComposables.size + 1) * borderPx
 
                     override fun MeasureScope.measure(
@@ -232,7 +229,7 @@ public fun <T> Table(
                         constraints: Constraints
                     ): MeasureResult {
 
-                        val availableWidth = constraints.maxWidth - totalHorizontalPadding
+                        val availableWidth = constraints.maxWidth
 
                         val columnWidthsInitial: List<Int> = (0..<totalColumnCount).map { colIndex ->
                             // Account for the selection column
@@ -308,13 +305,13 @@ public fun <T> Table(
                         val tableHeight =
                             (tallestCellHeightByRow.sum() + totalVerticalPadding).coerceAtMost(constraints.maxHeight)
                         val tableWidth =
-                            (widestCellByColumn.sum() + totalHorizontalPadding).coerceAtMost(constraints.maxWidth)
+                            (widestCellByColumn.sum()).coerceAtMost(constraints.maxWidth)
 
                         return layout(tableWidth, tableHeight) {
                             var yPosition = borderPx
 
                             placeablesByRow.forEachIndexed { rowIndex, rowPlaceables ->
-                                var xPosition = borderPx
+                                var xPosition = 0
                                 rowPlaceables.forEach { placeable ->
                                     placeable.placeRelative(xPosition, yPosition)
                                     xPosition += placeable.width
@@ -377,8 +374,12 @@ public fun <T> Table(
                                 }
                             }
                         }
-                        // TODO 50 is a magic constant (to account for the selection column)
-                        return widths.sum() + if (showSelectionColumn) 50.dp.roundToPx() else 0
+
+                        val selectionColumnWidth = if (showSelectionColumn) {
+                            val selectionHeaderCellMeasurable = measurables[0][0]
+                            selectionHeaderCellMeasurable.maxIntrinsicWidth(56.dp.roundToPx())
+                        } else 0
+                        return widths.sum() + selectionColumnWidth
                     }
                 }
             )
@@ -386,7 +387,7 @@ public fun <T> Table(
 
         if (showPaginationBar) {
             PaginationBar(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(0.dp, 0.dp, 4.dp, 4.dp)).background(Color(0x1f000000)).padding(1.dp, 0.dp, 1.dp, 1.dp).background(Color.White),
+                Modifier.fillMaxWidth().background(Color.White),
                 filteredSortedData.size,
                 pageSizeOptions,
                 defaultPageSize,
