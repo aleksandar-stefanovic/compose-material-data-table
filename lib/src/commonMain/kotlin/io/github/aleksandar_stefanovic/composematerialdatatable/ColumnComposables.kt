@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
@@ -45,7 +46,12 @@ internal fun TextHeader(
         Alignment.CenterVertically
     ) {
         if (horizontalArrangement == Arrangement.Start) {
-            Text(headerText, fontWeight = FontWeight.SemiBold)
+            Text(
+                headerText,
+                fontWeight = FontWeight.SemiBold,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
         }
 
         when (sortOrder) {
@@ -58,7 +64,12 @@ internal fun TextHeader(
         }
 
         if (horizontalArrangement == Arrangement.End) {
-            Text(headerText, fontWeight = FontWeight.SemiBold)
+            Text(
+                headerText,
+                fontWeight = FontWeight.SemiBold,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
         }
     }
 }
@@ -73,7 +84,13 @@ private val defaultCellModifier = Modifier.background(Color.White).padding(16.dp
 
 @Composable
 internal fun TextCell(text: String, textAlign: TextAlign) {
-    Text(text, defaultCellModifier, textAlign = textAlign)
+    Text(
+        text,
+        defaultCellModifier,
+        textAlign = textAlign,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1
+    )
 }
 
 @Composable
@@ -83,6 +100,8 @@ internal fun IntCell(int: Int, numberFormat: String? = null, textAlign: TextAlig
         stringValue,
         defaultCellModifier,
         textAlign = textAlign,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1
     )
 }
 
@@ -91,13 +110,21 @@ internal fun DoubleCell(double: Double, numberFormat: String? = null, textAlign:
     Text(
         numberFormat?.format(double) ?: double.toString(),
         defaultCellModifier,
-        textAlign = textAlign
+        textAlign = textAlign,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1
     )
 }
 
 @Composable
 internal fun DateCell(date: LocalDate, dateFormat: DateTimeFormat<LocalDate>, textAlign: TextAlign) {
-    Text(dateFormat.format(date), defaultCellModifier, textAlign = textAlign)
+    Text(
+        dateFormat.format(date),
+        defaultCellModifier,
+        textAlign = textAlign,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1
+    )
 }
 
 @Composable
