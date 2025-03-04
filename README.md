@@ -2,10 +2,7 @@
 
 ### A Kotlin & Jetpack Compose Multiplatform compliant implementation of the [Material 2 Data Table](https://m2.material.io/components/data-tables).
 
-The project aims to create a Jetpack Compose data table with MUI Data Grid serving as a
-reference for common and expected functionalities.
-
-![image](https://github.com/user-attachments/assets/2893091e-d1e0-431b-9614-a5a8cfa557ed)
+![image](https://github.com/user-attachments/assets/3ff22543-afcd-43c6-887f-b4e5d8c58b9d)
 
 # Setup
 ## Using `libs.versions.toml`
@@ -39,7 +36,7 @@ kotlin {
 }
 ```
 
-# Implemented features
+# Features
 - Column width settings
   - Fixed — the column with use the specified width
   - Wrap Content — the column will spread to the intrinsic width of the content
