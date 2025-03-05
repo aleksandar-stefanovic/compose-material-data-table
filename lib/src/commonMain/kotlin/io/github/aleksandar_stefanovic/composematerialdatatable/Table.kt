@@ -2,6 +2,7 @@ package io.github.aleksandar_stefanovic.composematerialdatatable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -171,10 +172,14 @@ public fun <T> Table(
     }
 
     val composableLambdasByRow: List<@Composable () -> Unit> = paginatedData.map { rowData ->
+
+        // Used to share hover interaction across multiple composables in a row
+        val interactionSource = remember { MutableInteractionSource() }
+
         // One lambda per row (will become List<List<Measurable>> in the Layout composable)
         return@map {
             if (showSelectionColumn) {
-                CheckboxCell(rowData in selectedData) { onBodySelectionClick(rowData) }
+                CheckboxCell(rowData in selectedData, interactionSource) { onBodySelectionClick(rowData) }
             }
             columnSpecsNormalized.forEach { columnSpec ->
 
@@ -185,12 +190,12 @@ public fun <T> Table(
                 }
 
                 when (columnSpec) {
-                    is TextColumnSpec -> TextCell(columnSpec.valueSelector(rowData), textAlign)
-                    is IntColumnSpec -> IntCell(columnSpec.valueSelector(rowData), columnSpec.numberFormat, textAlign)
-                    is DoubleColumnSpec -> DoubleCell(columnSpec.valueSelector(rowData), columnSpec.numberFormat, textAlign)
-                    is DateColumnSpec -> DateCell(columnSpec.valueSelector(rowData), columnSpec.dateFormat, textAlign)
-                    is CheckboxColumnSpec -> CheckboxCell(columnSpec.valueSelector(rowData), onClick = { }) // TODO
-                    is DropdownColumnSpec -> DropdownCell(columnSpec, rowData)
+                    is TextColumnSpec -> TextCell(columnSpec.valueSelector(rowData), textAlign, interactionSource)
+                    is IntColumnSpec -> IntCell(columnSpec.valueSelector(rowData), columnSpec.numberFormat, textAlign, interactionSource)
+                    is DoubleColumnSpec -> DoubleCell(columnSpec.valueSelector(rowData), columnSpec.numberFormat, textAlign, interactionSource)
+                    is DateColumnSpec -> DateCell(columnSpec.valueSelector(rowData), columnSpec.dateFormat, textAlign, interactionSource)
+                    is CheckboxColumnSpec -> CheckboxCell(columnSpec.valueSelector(rowData), interactionSource, onClick = { }) // TODO
+                    is DropdownColumnSpec -> DropdownCell(columnSpec, rowData, interactionSource)
                 }
             }
         }
