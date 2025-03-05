@@ -19,7 +19,6 @@ private enum class Genre(val stringValue: String) {
     CRIME("Crime"), SCI_FI("Science Fiction")
 }
 
-// Sample data, should be migrated somewhere else at some point
 private data class Movie(
     val title: String,
     val releaseDate: LocalDate,

@@ -15,9 +15,6 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material.TriStateCheckbox
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,8 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.github.aleksandar_stefanovic.lib.generated.resources.Res
+import io.github.aleksandar_stefanovic.lib.generated.resources.arrow_downward
+import io.github.aleksandar_stefanovic.lib.generated.resources.arrow_upward
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 internal fun TextHeader(
@@ -58,11 +59,11 @@ internal fun TextHeader(
         }
 
         when (sortOrder) {
-            SortOrder.ASC -> Image(Icons.Default.KeyboardArrowUp, "Ascending sorting")
-            SortOrder.DESC -> Image(Icons.Default.KeyboardArrowDown, "Descending sorting")
+            SortOrder.ASC -> Image(vectorResource(Res.drawable.arrow_upward), "Ascending sorting", Modifier.alpha(0.5f))
+            SortOrder.DESC -> Image(vectorResource(Res.drawable.arrow_downward), "Descending sorting", Modifier.alpha(0.5f))
             null -> {
                 // Keep an invisible icon to reserve column space
-                Image(Icons.Default.KeyboardArrowUp, "Ascending sorting", Modifier.alpha(0f))
+                Image(vectorResource(Res.drawable.arrow_upward), "Ascending sorting", Modifier.alpha(0f))
             }
         }
 
