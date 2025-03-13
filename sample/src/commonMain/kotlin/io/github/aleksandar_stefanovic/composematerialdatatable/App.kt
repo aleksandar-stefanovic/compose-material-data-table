@@ -85,7 +85,7 @@ private val movies = listOf(
 internal fun App() {
     MaterialTheme {
         val columnSpecs = listOf<ColumnSpec<Movie, *>>(
-            TextColumnSpec("Title", WidthSetting.WrapContent) { it.title },
+            TextColumnSpec("Title", WidthSetting.Flex(1f)) { it.title },
             DateColumnSpec("Release Date", WidthSetting.WrapContent, { it.releaseDate }),
             DoubleColumnSpec("Rating", WidthSetting.WrapContent, valueSelector = { it.rating }),
             IntColumnSpec("Awards", WidthSetting.WrapContent, { it.awardCount }),

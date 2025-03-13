@@ -4,9 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
@@ -205,7 +203,7 @@ public fun <T> Table(
     // TODO headers should not figure into the column width, text should be truncated instead
     val headerAndBodyRowComposables: List<@Composable () -> Unit> = listOf(headerRowComposableLambda) + composableLambdasByRow
 
-    Card(modifier.width(IntrinsicSize.Max), border = BorderStroke(1.dp, Color(0x1f000000))) {
+    Card(modifier, border = BorderStroke(1.dp, Color(0x1f000000))) {
 
         FilterBar(
             Modifier.fillMaxWidth().background(Color.White),
@@ -261,7 +259,7 @@ public fun <T> Table(
                             }
                         }
 
-                        val remainingWidth = availableWidth - columnWidthsInitial.sum()
+                        val remainingWidth = (availableWidth - columnWidthsInitial.sum()).coerceAtLeast(0)
 
                         // Calculate width of the flex columns based on the remaining width
                         val columnWidths = (columnWidthsInitial).mapIndexed { colIndex, width ->
