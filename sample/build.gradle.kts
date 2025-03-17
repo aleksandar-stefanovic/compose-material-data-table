@@ -18,6 +18,19 @@ kotlin {
     }
     
     jvm("desktop")
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeMaterialDataTable"
+            isStatic = true
+
+            export(project(":lib"))
+        }
+    }
     
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -62,6 +75,9 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+        }
+        iosMain.dependencies {
+            api(project(":lib"))
         }
     }
 }
