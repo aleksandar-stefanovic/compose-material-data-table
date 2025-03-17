@@ -31,13 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import io.github.aleksandar_stefanovic.composematerialdatatable.DateColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.DropdownPicker
-import io.github.aleksandar_stefanovic.lib.generated.resources.Res
-import io.github.aleksandar_stefanovic.lib.generated.resources.date_range
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.DataTableIcons
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.DateRange
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.vectorResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +91,10 @@ internal fun <T> DateFilterModal(
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = !showDatePicker }) {
-                        Image(vectorResource(Res.drawable.date_range), "Date picker")
+                        Image(
+                            imageVector = DataTableIcons.DateRange,
+                            contentDescription = "Date picker"
+                        )
                     }
                 },
                 modifier = Modifier

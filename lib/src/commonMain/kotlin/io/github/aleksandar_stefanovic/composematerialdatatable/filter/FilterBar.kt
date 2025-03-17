@@ -26,10 +26,9 @@ import io.github.aleksandar_stefanovic.composematerialdatatable.DoubleColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.DropdownColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.IntColumnSpec
 import io.github.aleksandar_stefanovic.composematerialdatatable.TextColumnSpec
-import io.github.aleksandar_stefanovic.lib.generated.resources.Res
-import io.github.aleksandar_stefanovic.lib.generated.resources.close
-import io.github.aleksandar_stefanovic.lib.generated.resources.filter_list
-import org.jetbrains.compose.resources.vectorResource
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.Close
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.DataTableIcons
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.FilterList
 
 @Composable
 internal fun <T> FilterBar(
@@ -46,7 +45,7 @@ internal fun <T> FilterBar(
 
     Row(modifier) {
         IconButton(onClick = { showFilterPicker = !showFilterPicker }) {
-            Image(vectorResource(Res.drawable.filter_list), "Filter")
+            Image(imageVector = DataTableIcons.FilterList, contentDescription = "Filter")
         }
         DropdownMenu(showFilterPicker, onDismissRequest = { showFilterPicker = false }) {
             columnSpecs.forEach { columnSpec ->
@@ -150,7 +149,7 @@ internal fun <T> FilterBar(
                         modifier = Modifier.size(18.dp),
                         onClick = { onRemoveFilter(it) }
                     ) {
-                        Image(vectorResource(Res.drawable.close), "Filter")
+                        Image(imageVector = DataTableIcons.Close, contentDescription = "Filter")
                     }
                 }
 

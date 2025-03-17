@@ -29,12 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.aleksandar_stefanovic.lib.generated.resources.Res
-import io.github.aleksandar_stefanovic.lib.generated.resources.arrow_downward
-import io.github.aleksandar_stefanovic.lib.generated.resources.arrow_upward
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ArrowDownward
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ArrowUpward
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.DataTableIcons
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
-import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 internal fun TextHeader(
@@ -59,11 +58,23 @@ internal fun TextHeader(
         }
 
         when (sortOrder) {
-            SortOrder.ASC -> Image(vectorResource(Res.drawable.arrow_upward), "Ascending sorting", Modifier.alpha(0.5f))
-            SortOrder.DESC -> Image(vectorResource(Res.drawable.arrow_downward), "Descending sorting", Modifier.alpha(0.5f))
+            SortOrder.ASC -> Image(
+                imageVector = DataTableIcons.ArrowUpward,
+                contentDescription = "Ascending sorting",
+                modifier = Modifier.alpha(0.5f)
+            )
+            SortOrder.DESC -> Image(
+                imageVector = DataTableIcons.ArrowDownward,
+                contentDescription = "Descending sorting",
+                modifier = Modifier.alpha(0.5f)
+            )
             null -> {
                 // Keep an invisible icon to reserve column space
-                Image(vectorResource(Res.drawable.arrow_upward), "Ascending sorting", Modifier.alpha(0f))
+                Image(
+                    imageVector = DataTableIcons.ArrowUpward,
+                    contentDescription = "Ascending sorting",
+                    modifier = Modifier.alpha(0f)
+                )
             }
         }
 
