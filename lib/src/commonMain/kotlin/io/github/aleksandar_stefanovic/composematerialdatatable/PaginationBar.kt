@@ -19,12 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import io.github.aleksandar_stefanovic.lib.generated.resources.Res
-import io.github.aleksandar_stefanovic.lib.generated.resources.chevron_left
-import io.github.aleksandar_stefanovic.lib.generated.resources.chevron_right
-import io.github.aleksandar_stefanovic.lib.generated.resources.first_page
-import io.github.aleksandar_stefanovic.lib.generated.resources.last_page
-import org.jetbrains.compose.resources.vectorResource
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ChevronLeft
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ChevronRight
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.DataTableIcons
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.FirstPage
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.LastPage
 
 @Composable
 internal fun PaginationBar(
@@ -70,28 +69,28 @@ internal fun PaginationBar(
                 },
                 Modifier.padding(end = 4.dp).alpha(if (pageIndex > 0) 1f else 0.38f),
                 enabled = pageIndex > 0
-            ) { Image(vectorResource(Res.drawable.first_page), "Jump to start") }
+            ) { Image(imageVector = DataTableIcons.FirstPage, contentDescription = "Jump to start") }
             IconButton(
                 onClick = {
                     pageIndex--
                 },
                 Modifier.padding(end = 4.dp).alpha(if (pageIndex > 0) 1f else 0.38f),
                 enabled = pageIndex > 0
-            ) { Image(vectorResource(Res.drawable.chevron_left), "Previous page") }
+            ) { Image(imageVector = DataTableIcons.ChevronLeft, contentDescription = "Previous page") }
             IconButton(
                 onClick = {
                     pageIndex++
                 },
                 Modifier.padding(end = 4.dp).alpha(if (pageIndex < pageCount - 1) 1f else 0.38f),
                 enabled = pageIndex < pageCount - 1
-            ) { Image(vectorResource(Res.drawable.chevron_right), "Next page") }
+            ) { Image(imageVector = DataTableIcons.ChevronRight, contentDescription = "Next page") }
             IconButton(
                 onClick = {
                     pageIndex = pageCount - 1
                 },
                 Modifier.padding(end = 4.dp).alpha(if (pageIndex < pageCount - 1) 1f else 0.38f),
                 enabled = pageIndex < pageCount - 1
-            ) { Image(vectorResource(Res.drawable.last_page), "Jump to end") }
+            ) { Image(imageVector = DataTableIcons.LastPage, contentDescription = "Jump to end") }
         }
     }
 }
