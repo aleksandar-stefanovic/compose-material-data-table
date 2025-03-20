@@ -1,10 +1,8 @@
 package io.github.aleksandar_stefanovic.composematerialdatatable
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -18,6 +16,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ChevronLeft
 import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ChevronRight
@@ -53,13 +59,13 @@ internal fun PaginationBar(
         )
     }
 
-    BoxWithConstraints(modifier) {
-        val showPageSize = maxWidth >= 500.dp
-        Row(Modifier.fillMaxWidth(), Arrangement.End, Alignment.CenterVertically) {
-            if (showPageSize) {
-                Text("Rows per page", Modifier.padding(end = 4.dp))
-                DropdownPicker(pageSize, pageSizeOptions, onOptionPicked = { pageSize = it })
-            }
+    Layout({
+        Row(Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
+            Text("Rows per page", Modifier.padding(end = 4.dp))
+            DropdownPicker(pageSize, pageSizeOptions, onOptionPicked = { pageSize = it })
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
             val firstIndex = pageIndex * pageSize + 1
             val lastIndex = ((pageIndex + 1) * pageSize).coerceAtMost(dataSize)
             Text("$firstIndex-$lastIndex of $dataSize", Modifier.padding(horizontal = 16.dp))
@@ -92,6 +98,58 @@ internal fun PaginationBar(
                 enabled = pageIndex < pageCount - 1
             ) { Image(imageVector = DataTableIcons.LastPage, contentDescription = "Jump to end") }
         }
-    }
+
+    }, modifier, object: MeasurePolicy {
+        override fun MeasureScope.measure(
+            measurables: List<Measurable>,
+            constraints: Constraints
+        ): MeasureResult {
+
+            val placeables = measurables.map { measurable ->
+                measurable.measure(Constraints(
+                    maxWidth = constraints.maxWidth,
+                ))
+            }
+
+            val (pageSizePlaceable, pageControlsPlaceable) = placeables
+
+            val availableWidth = constraints.maxWidth
+
+            val showPageSizeControl =
+                availableWidth >= pageSizePlaceable.width + pageControlsPlaceable.width
+
+            // Use all available width, to match the width table content
+            // Coercing to a "big" value to circumvent the issue where the availableWidth is maxSize,
+            // until the table content is measured. A bad workaround, indeed.
+            return layout(availableWidth.coerceAtMost(100000), pageControlsPlaceable.height) {
+                pageControlsPlaceable.placeRelative(
+                    availableWidth - pageControlsPlaceable.width,
+                    0
+                )
+
+                if (showPageSizeControl) {
+                    pageSizePlaceable.placeRelative(
+                        availableWidth - (pageControlsPlaceable.width + pageSizePlaceable.width),
+                        0
+                    )
+                }
+            }
+
+
+        }
+
+        override fun IntrinsicMeasureScope.maxIntrinsicWidth(
+            measurables: List<IntrinsicMeasurable>,
+            height: Int
+        ) = measurables.sumOf {
+            it.maxIntrinsicWidth(height)
+        }
+
+        // Only the buttons are important, page size control can be omitted
+        override fun IntrinsicMeasureScope.minIntrinsicWidth(
+            measurables: List<IntrinsicMeasurable>,
+            height: Int
+        ) = measurables[1].maxIntrinsicWidth(height)
+    })
 }
 

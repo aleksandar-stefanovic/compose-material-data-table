@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun <T> DropdownPicker(
+internal fun <T> DropdownPicker(
     value: T,
     options: Iterable<T>,
     valueFormatter: (T) -> String = { it.toString() },
@@ -30,7 +30,7 @@ fun <T> DropdownPicker(
     var showOptions by remember { mutableStateOf(false) }
 
     Box {
-        Row(Modifier.height(56.dp).clickable { showOptions = true }, verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.height(48.dp).clickable { showOptions = true }, verticalAlignment = Alignment.CenterVertically) {
             Text(valueFormatter(value))
             Image(Icons.Default.ArrowDropDown, "Dropdown")
         }
