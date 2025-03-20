@@ -18,7 +18,7 @@ kotlin {
 ```
 and, in your `libs.versions.toml`, add:
 ```toml
-composematerialdatatable = "1.1.1"
+composematerialdatatable = "1.2.0"
 
 [libraries]
 composematerialdatatable = { module = "io.github.aleksandar-stefanovic:composematerialdatatable", version.ref = "composematerialdatatable" }
@@ -30,7 +30,7 @@ composematerialdatatable = { module = "io.github.aleksandar-stefanovic:composema
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.aleksandar-stefanovic:composematerialdatatable:1.1.1")
+            implementation("io.github.aleksandar-stefanovic:composematerialdatatable:1.2.0")
         }
     }
 }
@@ -58,7 +58,11 @@ kotlin {
 For the planned features, see [Issues](https://github.com/aleksandar-stefanovic/compose-material-data-table/issues).
 
 ## Supported platforms
-Right now, it is tested and working on Desktop and Android, while the Kotlin/Wasm has partial support — it is limited by Kotlin/Wasm not having support for number formatting, but it works otherwise. Please create an issue or a pull request if you'd like to have this project supported on other platforms.
+Right now, it is tested and working on:
+- Desktop
+- Android
+- WASM (with the limitation of not having number formatting)
+- iOS
 
 # Example
 Gradle submodule `sample` contains a working example of the `Table` implementation, see [Sample App.kt](https://github.com/aleksandar-stefanovic/compose-material-data-table/blob/main/sample/src/commonMain/kotlin/io/github/aleksandar_stefanovic/composematerialdatatable/App.kt).
