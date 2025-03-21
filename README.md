@@ -1,6 +1,6 @@
 ![maven central version](https://img.shields.io/maven-central/v/io.github.aleksandar-stefanovic/composematerialdatatable)
 
-### A Kotlin & Jetpack Compose Multiplatform compliant implementation of the [Material 2 Data Table](https://m2.material.io/components/data-tables).
+### A Kotlin & Compose Multiplatform implementation of the [Material 2 Data Table](https://m2.material.io/components/data-tables).
 
 ![image](https://github.com/user-attachments/assets/3ff22543-afcd-43c6-887f-b4e5d8c58b9d)
 
