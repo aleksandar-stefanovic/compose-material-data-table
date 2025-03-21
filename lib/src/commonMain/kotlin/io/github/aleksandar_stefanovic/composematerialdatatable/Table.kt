@@ -2,10 +2,13 @@ package io.github.aleksandar_stefanovic.composematerialdatatable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -51,8 +54,11 @@ public fun <T> Table(
         columnSpecs.map { it.widthSetting }.filterIsInstance<WidthSetting.Flex>().map { it.weight }
             .sum()
 
+    var hasFlexColumns = false
+
     val columnSpecsNormalized = columnSpecs.map {
         if (it.widthSetting is WidthSetting.Flex) {
+            hasFlexColumns = true
             val weight = it.widthSetting.weight / totalFlexWeight
             it.copy(widthSetting = WidthSetting.Flex(weight))
         } else {
@@ -213,7 +219,13 @@ public fun <T> Table(
             onRemoveFilter = { filters -= it }
         )
 
-        SelectionContainer {
+        val horizontalScrollState = rememberScrollState()
+        val verticalScrollState = rememberScrollState()
+
+        // If there are any flex columns, horizontal scroll is not set, since the width is unconstrained
+        val selectionContainerModifier = if (hasFlexColumns) Modifier else Modifier.horizontalScroll(horizontalScrollState)
+
+        SelectionContainer(selectionContainerModifier.verticalScroll(verticalScrollState)) {
             Layout(
                 headerAndBodyRowComposables,
                 modifier = Modifier.background(Color(0x0f000000)),

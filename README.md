@@ -54,6 +54,7 @@ kotlin {
 - Toggleable selection column (first column with tri-state checkbox header and checkbox cells, which emits events on interaction)
 - Filtering
 - Client-based pagination
+- Horizontal and vertical scrolling
 
 For the planned features, see [Issues](https://github.com/aleksandar-stefanovic/compose-material-data-table/issues).
 
