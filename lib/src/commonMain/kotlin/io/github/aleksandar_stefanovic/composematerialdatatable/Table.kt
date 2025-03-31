@@ -6,6 +6,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -209,26 +210,26 @@ public fun <T> Table(
     // TODO headers should not figure into the column width, text should be truncated instead
     val headerAndBodyRowComposables: List<@Composable () -> Unit> = listOf(headerRowComposableLambda) + composableLambdasByRow
 
-    Card(modifier, border = BorderStroke(1.dp, Color(0x1f000000))) {
+    SelectionContainer {
+        Card(modifier, border = BorderStroke(1.dp, Color(0x1f000000))) {
 
-        FilterBar(
-            Modifier.fillMaxWidth().background(Color.White),
-            columnSpecsNormalized,
-            filters,
-            onFilterConfirm = { filters += it },
-            onRemoveFilter = { filters -= it }
-        )
+            FilterBar(
+                Modifier.fillMaxWidth().background(Color.White),
+                columnSpecsNormalized,
+                filters,
+                onFilterConfirm = { filters += it },
+                onRemoveFilter = { filters -= it }
+            )
 
-        val horizontalScrollState = rememberScrollState()
-        val verticalScrollState = rememberScrollState()
+            val horizontalScrollState = rememberScrollState()
+            val verticalScrollState = rememberScrollState()
 
-        // If there are any flex columns, horizontal scroll is not set, since the width is unconstrained
-        val selectionContainerModifier = if (hasFlexColumns) Modifier else Modifier.horizontalScroll(horizontalScrollState)
+            // If there are any flex columns, horizontal scroll is not set, since the width is unconstrained
+            val layoutModifier = if (hasFlexColumns) Modifier else Modifier.horizontalScroll(horizontalScrollState)
 
-        SelectionContainer(selectionContainerModifier.verticalScroll(verticalScrollState)) {
             Layout(
                 headerAndBodyRowComposables,
-                modifier = Modifier.background(Color(0x0f000000)),
+                modifier = layoutModifier.weight(1f, false).verticalScroll(verticalScrollState).background(Color(0x0f000000)),
                 measurePolicy = object : MultiContentMeasurePolicy {
 
                     val totalColumnCount =
@@ -236,7 +237,7 @@ public fun <T> Table(
 
                     // By spec, it should be 1.dp, but it doesn't work as intended when converted to px, TODO find an elegant solution
                     val borderPx = 1
-                    val totalVerticalPadding = (headerAndBodyRowComposables.size + 1) * borderPx
+                    val totalVerticalPadding = headerAndBodyRowComposables.size * borderPx
 
                     override fun MeasureScope.measure(
                         // Each element in the outer list is a single row
@@ -398,19 +399,19 @@ public fun <T> Table(
                     }
                 }
             )
-        }
 
-        if (showPaginationBar) {
-            PaginationBar(
-                Modifier.fillMaxWidth().background(Color.White),
-                filteredSortedData.size,
-                pageSizeOptions,
-                defaultPageSize,
-                onPaginationChanged = { offset, count ->
-                    paginationOffset = offset
-                    paginationCount = count
-                }
-            )
+            if (showPaginationBar) {
+                PaginationBar(
+                    Modifier.fillMaxWidth().padding(top = 1.dp).background(Color.White),
+                    filteredSortedData.size,
+                    pageSizeOptions,
+                    defaultPageSize,
+                    onPaginationChanged = { offset, count ->
+                        paginationOffset = offset
+                        paginationCount = count
+                    }
+                )
+            }
         }
     }
 }
