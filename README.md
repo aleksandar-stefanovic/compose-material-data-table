@@ -18,7 +18,7 @@ kotlin {
 ```
 and, in your `libs.versions.toml`, add:
 ```toml
-composematerialdatatable = "1.2.0"
+composematerialdatatable = "1.2.1"
 
 [libraries]
 composematerialdatatable = { module = "io.github.aleksandar-stefanovic:composematerialdatatable", version.ref = "composematerialdatatable" }
@@ -30,7 +30,7 @@ composematerialdatatable = { module = "io.github.aleksandar-stefanovic:composema
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.aleksandar-stefanovic:composematerialdatatable:1.2.0")
+            implementation("io.github.aleksandar-stefanovic:composematerialdatatable:1.2.1")
         }
     }
 }
