@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -210,7 +211,7 @@ public fun <T> Table(
     // TODO headers should not figure into the column width, text should be truncated instead
     val headerAndBodyRowComposables: List<@Composable () -> Unit> = listOf(headerRowComposableLambda) + composableLambdasByRow
 
-    SelectionContainer {
+    Box {
         Card(modifier, border = BorderStroke(1.dp, Color(0x1f000000))) {
 
             FilterBar(
@@ -227,178 +228,180 @@ public fun <T> Table(
             // If there are any flex columns, horizontal scroll is not set, since the width is unconstrained
             val layoutModifier = if (hasFlexColumns) Modifier else Modifier.horizontalScroll(horizontalScrollState)
 
-            Layout(
-                headerAndBodyRowComposables,
-                modifier = layoutModifier.weight(1f, false).verticalScroll(verticalScrollState).background(Color(0x0f000000)),
-                measurePolicy = object : MultiContentMeasurePolicy {
+            SelectionContainer {
+                Layout(
+                    headerAndBodyRowComposables,
+                    modifier = layoutModifier.weight(1f, false).verticalScroll(verticalScrollState).background(Color(0x0f000000)),
+                    measurePolicy = object : MultiContentMeasurePolicy {
 
-                    val totalColumnCount =
-                        columnSpecsNormalized.size + if (showSelectionColumn) 1 else 0
+                        val totalColumnCount =
+                            columnSpecsNormalized.size + if (showSelectionColumn) 1 else 0
 
-                    // By spec, it should be 1.dp, but it doesn't work as intended when converted to px, TODO find an elegant solution
-                    val borderPx = 1
-                    val totalVerticalPadding = headerAndBodyRowComposables.size * borderPx
+                        // By spec, it should be 1.dp, but it doesn't work as intended when converted to px, TODO find an elegant solution
+                        val borderPx = 1
+                        val totalVerticalPadding = headerAndBodyRowComposables.size * borderPx
 
-                    override fun MeasureScope.measure(
-                        // Each element in the outer list is a single row
-                        measurables: List<List<Measurable>>,
-                        constraints: Constraints
-                    ): MeasureResult {
+                        override fun MeasureScope.measure(
+                            // Each element in the outer list is a single row
+                            measurables: List<List<Measurable>>,
+                            constraints: Constraints
+                        ): MeasureResult {
 
-                        val availableWidth = constraints.maxWidth
+                            val availableWidth = constraints.maxWidth
 
-                        val columnWidthsInitial: List<Int> = (0..<totalColumnCount).map { colIndex ->
-                            // Account for the selection column
-                            val widthSetting = if (showSelectionColumn) {
-                                if (colIndex == 0) {
-                                    WidthSetting.WrapContent
+                            val columnWidthsInitial: List<Int> = (0..<totalColumnCount).map { colIndex ->
+                                // Account for the selection column
+                                val widthSetting = if (showSelectionColumn) {
+                                    if (colIndex == 0) {
+                                        WidthSetting.WrapContent
+                                    } else {
+                                        columnSpecs[colIndex - 1].widthSetting
+                                    }
                                 } else {
-                                    columnSpecs[colIndex - 1].widthSetting
+                                    columnSpecs[colIndex].widthSetting
                                 }
-                            } else {
-                                columnSpecs[colIndex].widthSetting
-                            }
 
-                            return@map when (widthSetting) {
-                                is WidthSetting.Flex -> 0 // Will be set at a later point
-                                is WidthSetting.Static -> widthSetting.width.roundToPx()
-                                WidthSetting.WrapContent -> {
-                                    // Iterate over all the measurables in this row, find the widest one
-                                    measurables.maxOf { rowMeasurables ->
-                                        val targetHeight = 56.dp // Per Material specs
-                                        rowMeasurables[colIndex].maxIntrinsicWidth(targetHeight.roundToPx())
+                                return@map when (widthSetting) {
+                                    is WidthSetting.Flex -> 0 // Will be set at a later point
+                                    is WidthSetting.Static -> widthSetting.width.roundToPx()
+                                    WidthSetting.WrapContent -> {
+                                        // Iterate over all the measurables in this row, find the widest one
+                                        measurables.maxOf { rowMeasurables ->
+                                            val targetHeight = 56.dp // Per Material specs
+                                            rowMeasurables[colIndex].maxIntrinsicWidth(targetHeight.roundToPx())
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        val remainingWidth = (availableWidth - columnWidthsInitial.sum()).coerceAtLeast(0)
+                            val remainingWidth = (availableWidth - columnWidthsInitial.sum()).coerceAtLeast(0)
 
-                        // Calculate width of the flex columns based on the remaining width
-                        val columnWidths = (columnWidthsInitial).mapIndexed { colIndex, width ->
-                            val widthSetting = if (showSelectionColumn) {
-                                if (colIndex == 0) {
-                                    WidthSetting.WrapContent
+                            // Calculate width of the flex columns based on the remaining width
+                            val columnWidths = (columnWidthsInitial).mapIndexed { colIndex, width ->
+                                val widthSetting = if (showSelectionColumn) {
+                                    if (colIndex == 0) {
+                                        WidthSetting.WrapContent
+                                    } else {
+                                        columnSpecsNormalized[colIndex - 1].widthSetting
+                                    }
                                 } else {
-                                    columnSpecsNormalized[colIndex - 1].widthSetting
+                                    columnSpecsNormalized[colIndex].widthSetting
                                 }
+                                if (widthSetting is WidthSetting.Flex) {
+                                    (remainingWidth * widthSetting.weight).toInt()
+                                } else {
+                                    width
+                                }
+                            }
+
+                            val placeablesByRow: List<List<Placeable>> =
+                                measurables.map { rowMeasurables ->
+                                    val targetHeight = 56.dp.roundToPx()
+                                    rowMeasurables.mapIndexed { colIndex, measurable ->
+                                        val columnWidth = columnWidths[colIndex]
+                                        val cellConstraints = Constraints(
+                                            minWidth = columnWidth,
+                                            maxWidth = columnWidth,
+                                            minHeight = targetHeight,
+                                            maxHeight = targetHeight
+                                        )
+                                        measurable.measure(cellConstraints)
+                                    }
+                                }
+
+
+                            val tallestCellHeightByRow = placeablesByRow.map { rowPlaceables ->
+                                rowPlaceables.maxOf { it.height }
+                            }
+
+                            val widestCellByColumn = (0..<totalColumnCount).map { colIndex ->
+                                placeablesByRow.maxOf { rowPlaceables ->
+                                    rowPlaceables[colIndex].width
+                                }
+                            }
+
+                            val tableHeight =
+                                (tallestCellHeightByRow.sum() + totalVerticalPadding).coerceAtMost(constraints.maxHeight)
+                            val tableWidth =
+                                (widestCellByColumn.sum()).coerceAtMost(constraints.maxWidth)
+
+                            return layout(tableWidth, tableHeight) {
+                                var yPosition = borderPx
+
+                                placeablesByRow.forEachIndexed { rowIndex, rowPlaceables ->
+                                    var xPosition = 0
+                                    rowPlaceables.forEach { placeable ->
+                                        placeable.placeRelative(xPosition, yPosition)
+                                        xPosition += placeable.width
+                                    }
+                                    yPosition += tallestCellHeightByRow[rowIndex] + borderPx
+                                }
+                            }
+                        }
+
+                        // There isn't really any functionality in the spec to define how the table
+                        // should respond to the available width, so the min and max intrinsic heights
+                        // are the same
+                        override fun IntrinsicMeasureScope.maxIntrinsicHeight(
+                            measurables: List<List<IntrinsicMeasurable>>,
+                            width: Int
+                        ) = minIntrinsicHeight(measurables, width)
+
+                        override fun IntrinsicMeasureScope.minIntrinsicHeight(
+                            measurables: List<List<IntrinsicMeasurable>>,
+                            width: Int
+                        ): Int {
+                            val headerHeight = 56.dp
+                            // Deducting one from size because that's the header row
+                            val totalRowHeight = (measurables.size - 1) * 52.dp
+                            return (headerHeight + totalRowHeight).roundToPx() + totalVerticalPadding
+                        }
+
+                        override fun IntrinsicMeasureScope.maxIntrinsicWidth(
+                            measurables: List<List<IntrinsicMeasurable>>,
+                            height: Int
+                        ): Int {
+                            // If there are any flex columns, table width is unbound
+                            return if (columnSpecsNormalized.any { it.widthSetting is WidthSetting.Flex }) {
+                                Constraints.Infinity
                             } else {
-                                columnSpecsNormalized[colIndex].widthSetting
-                            }
-                            if (widthSetting is WidthSetting.Flex) {
-                                (remainingWidth * widthSetting.weight).toInt()
-                            } else {
-                                width
+                                // Spec doesn't define responsiveness of the table based on the given
+                                // height, so min and max intrinsic widths are the same
+                                this.minIntrinsicWidth(measurables, height)
                             }
                         }
 
-                        val placeablesByRow: List<List<Placeable>> =
-                            measurables.map { rowMeasurables ->
-                                val targetHeight = 56.dp.roundToPx()
-                                rowMeasurables.mapIndexed { colIndex, measurable ->
-                                    val columnWidth = columnWidths[colIndex]
-                                    val cellConstraints = Constraints(
-                                        minWidth = columnWidth,
-                                        maxWidth = columnWidth,
-                                        minHeight = targetHeight,
-                                        maxHeight = targetHeight
-                                    )
-                                    measurable.measure(cellConstraints)
+                        // When calculating the min width, flex columns are reduced to 0
+                        override fun IntrinsicMeasureScope.minIntrinsicWidth(
+                            measurables: List<List<IntrinsicMeasurable>>,
+                            height: Int
+                        ): Int {
+                            val widths = columnSpecsNormalized.mapIndexed { colIndex, columnSpec ->
+                                when (columnSpec.widthSetting) {
+                                    is WidthSetting.Flex -> 0
+                                    is WidthSetting.Static -> columnSpec.widthSetting.width.roundToPx()
+                                    is WidthSetting.WrapContent -> {
+                                        measurables.mapIndexed { index, measurables ->
+                                            val rowHeight =
+                                                (if (index == 0) 56.dp else 52.dp).roundToPx()
+                                            val cIndex =
+                                                if (showSelectionColumn) colIndex + 1 else colIndex
+                                            val measurable = measurables[cIndex]
+                                            measurable.maxIntrinsicWidth(rowHeight)
+                                        }.max() // Return the biggest intrinsic width
+                                    }
                                 }
                             }
 
-
-                        val tallestCellHeightByRow = placeablesByRow.map { rowPlaceables ->
-                            rowPlaceables.maxOf { it.height }
-                        }
-
-                        val widestCellByColumn = (0..<totalColumnCount).map { colIndex ->
-                            placeablesByRow.maxOf { rowPlaceables ->
-                                rowPlaceables[colIndex].width
-                            }
-                        }
-
-                        val tableHeight =
-                            (tallestCellHeightByRow.sum() + totalVerticalPadding).coerceAtMost(constraints.maxHeight)
-                        val tableWidth =
-                            (widestCellByColumn.sum()).coerceAtMost(constraints.maxWidth)
-
-                        return layout(tableWidth, tableHeight) {
-                            var yPosition = borderPx
-
-                            placeablesByRow.forEachIndexed { rowIndex, rowPlaceables ->
-                                var xPosition = 0
-                                rowPlaceables.forEach { placeable ->
-                                    placeable.placeRelative(xPosition, yPosition)
-                                    xPosition += placeable.width
-                                }
-                                yPosition += tallestCellHeightByRow[rowIndex] + borderPx
-                            }
+                            val selectionColumnWidth = if (showSelectionColumn) {
+                                val selectionHeaderCellMeasurable = measurables[0][0]
+                                selectionHeaderCellMeasurable.maxIntrinsicWidth(56.dp.roundToPx())
+                            } else 0
+                            return widths.sum() + selectionColumnWidth
                         }
                     }
-
-                    // There isn't really any functionality in the spec to define how the table
-                    // should respond to the available width, so the min and max intrinsic heights
-                    // are the same
-                    override fun IntrinsicMeasureScope.maxIntrinsicHeight(
-                        measurables: List<List<IntrinsicMeasurable>>,
-                        width: Int
-                    ) = minIntrinsicHeight(measurables, width)
-
-                    override fun IntrinsicMeasureScope.minIntrinsicHeight(
-                        measurables: List<List<IntrinsicMeasurable>>,
-                        width: Int
-                    ): Int {
-                        val headerHeight = 56.dp
-                        // Deducting one from size because that's the header row
-                        val totalRowHeight = (measurables.size - 1) * 52.dp
-                        return (headerHeight + totalRowHeight).roundToPx() + totalVerticalPadding
-                    }
-
-                    override fun IntrinsicMeasureScope.maxIntrinsicWidth(
-                        measurables: List<List<IntrinsicMeasurable>>,
-                        height: Int
-                    ): Int {
-                        // If there are any flex columns, table width is unbound
-                        return if (columnSpecsNormalized.any { it.widthSetting is WidthSetting.Flex }) {
-                            Constraints.Infinity
-                        } else {
-                            // Spec doesn't define responsiveness of the table based on the given
-                            // height, so min and max intrinsic widths are the same
-                            this.minIntrinsicWidth(measurables, height)
-                        }
-                    }
-
-                    // When calculating the min width, flex columns are reduced to 0
-                    override fun IntrinsicMeasureScope.minIntrinsicWidth(
-                        measurables: List<List<IntrinsicMeasurable>>,
-                        height: Int
-                    ): Int {
-                        val widths = columnSpecsNormalized.mapIndexed { colIndex, columnSpec ->
-                            when (columnSpec.widthSetting) {
-                                is WidthSetting.Flex -> 0
-                                is WidthSetting.Static -> columnSpec.widthSetting.width.roundToPx()
-                                is WidthSetting.WrapContent -> {
-                                    measurables.mapIndexed { index, measurables ->
-                                        val rowHeight =
-                                            (if (index == 0) 56.dp else 52.dp).roundToPx()
-                                        val cIndex =
-                                            if (showSelectionColumn) colIndex + 1 else colIndex
-                                        val measurable = measurables[cIndex]
-                                        measurable.maxIntrinsicWidth(rowHeight)
-                                    }.max() // Return the biggest intrinsic width
-                                }
-                            }
-                        }
-
-                        val selectionColumnWidth = if (showSelectionColumn) {
-                            val selectionHeaderCellMeasurable = measurables[0][0]
-                            selectionHeaderCellMeasurable.maxIntrinsicWidth(56.dp.roundToPx())
-                        } else 0
-                        return widths.sum() + selectionColumnWidth
-                    }
-                }
-            )
+                )
+            }
 
             if (showPaginationBar) {
                 PaginationBar(
