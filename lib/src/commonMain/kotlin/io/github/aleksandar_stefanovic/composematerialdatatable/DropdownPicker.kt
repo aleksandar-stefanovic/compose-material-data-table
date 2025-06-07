@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +31,7 @@ internal fun <T> DropdownPicker(
     Box {
         Row(Modifier.height(48.dp).clickable { showOptions = true }, verticalAlignment = Alignment.CenterVertically) {
             Text(valueFormatter(value))
-            Image(Icons.Default.ArrowDropDown, "Dropdown")
+            Image(ArrowDropDown, "Dropdown")
         }
 
         DropdownMenu(showOptions, onDismissRequest = { showOptions = false }) {
