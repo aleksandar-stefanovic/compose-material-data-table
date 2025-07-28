@@ -6,6 +6,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,7 +29,7 @@ private data class Movie(
     val awardCount: Int
 )
 
-private val movies = listOf(
+private val movies = arrayOf(
     Movie(
         title = "Guardians of the API",
         releaseDate = LocalDate(2014, 8, 1),
@@ -83,9 +84,12 @@ private val movies = listOf(
 @Composable
 @Preview
 internal fun App() {
+
+    val moviesState  = remember { mutableStateListOf(*movies) }
+
     MaterialTheme {
         val columnSpecs = listOf<ColumnSpec<Movie, *>>(
-            TextColumnSpec("Title", WidthSetting.Flex(1f)) { it.title },
+            TextColumnSpec("Title", WidthSetting.Flex(1f), valueSelector = { it.title }, onEdit = { index, newValue -> moviesState[index] = moviesState[index].copy(title = newValue) } ),
             DateColumnSpec("Release Date", WidthSetting.WrapContent, { it.releaseDate }),
             DoubleColumnSpec("Rating", WidthSetting.WrapContent, valueSelector = { it.rating }),
             IntColumnSpec("Awards", WidthSetting.WrapContent, { it.awardCount }),
@@ -94,10 +98,9 @@ internal fun App() {
                 WidthSetting.WrapContent,
                 { it.genre },
                 { it.stringValue },
-                Genre.entries.toList(),
-                onChoicePicked = {}
+                Genre.entries.toList()
             ),
-            CheckboxColumnSpec("Watched", WidthSetting.WrapContent) { it.watched }
+            CheckboxColumnSpec("Watched", WidthSetting.WrapContent, { it.watched })
         )
 
         Column {
@@ -105,7 +108,7 @@ internal fun App() {
 
             Table(
                 columnSpecs,
-                movies,
+                moviesState,
                 modifier = Modifier.padding(20.dp),
                 showSelectionColumn = true,
                 onSelectionChange = { list -> selectedCount = list.size }

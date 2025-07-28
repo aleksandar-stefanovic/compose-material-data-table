@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Checkbox
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TriStateCheckbox
 import androidx.compose.runtime.Composable
@@ -23,7 +24,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ArrowDownward
 import io.github.aleksandar_stefanovic.composematerialdatatable.icons.ArrowUpward
 import io.github.aleksandar_stefanovic.composematerialdatatable.icons.DataTableIcons
+import io.github.aleksandar_stefanovic.composematerialdatatable.icons.Edit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
 
@@ -99,18 +104,33 @@ internal fun CheckboxHeader(state: ToggleableState, onClick: () -> Unit) {
 private val hoverColor = Color(0xfff3f3f3)
 
 @Composable
-internal fun TextCell(text: String, textAlign: TextAlign, interactionSource: MutableInteractionSource) {
-
+internal fun TextCell(
+    text: String,
+    textAlign: TextAlign,
+    interactionSource: MutableInteractionSource,
+    rowIndex: Int,
+    onOpenEditModal: ((rowIndex: Int, positionInRoot: Offset) -> Unit)? = null
+) {
     val isHovered by interactionSource.collectIsHoveredAsState()
     val backgroundColor = if (isHovered) hoverColor else Color.White
 
-    Text(
-        text,
-        Modifier.hoverable(interactionSource).background(backgroundColor).padding(16.dp),
-        textAlign = textAlign,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1
-    )
+    var positionInRoot: Offset = remember { Offset.Zero }
+
+    Row(Modifier.hoverable(interactionSource).background(backgroundColor).padding(16.dp).onGloballyPositioned {
+        positionInRoot = it.positionInParent()
+    }) {
+        Text(
+            text,
+            textAlign = textAlign,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+        if (isHovered && onOpenEditModal != null) {
+            IconButton({ onOpenEditModal(rowIndex, positionInRoot) }) {
+                Image(Edit, "Dropdown")
+            }
+        }
+    }
 }
 
 @Composable
@@ -188,7 +208,7 @@ internal fun <T, S : Comparable<S>> DropdownCell(
         DropdownMenu(expanded, onDismissRequest = { expanded = false }) {
             spec.choices.forEach { choice ->
                 DropdownMenuItem(onClick = {
-                    spec.onChoicePicked(choice)
+                    spec.onEdit?.let { it(0, choice) } // TODO
                     expanded = false
                 }) {
                     Text(spec.valueFormatter(choice))
