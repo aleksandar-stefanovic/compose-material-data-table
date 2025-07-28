@@ -177,35 +177,83 @@ public fun <T> Table(
         }
     }
 
-    val composableLambdasByRow: List<@Composable () -> Unit> = paginatedData.map { rowData ->
+    val editPopupState = rememberEditPopupState()
 
-        // Used to share hover interaction across multiple composables in a row
-        val interactionSource = remember { MutableInteractionSource() }
+    val composableLambdasByRow: List<@Composable () -> Unit> =
+        paginatedData.mapIndexed { index, rowData ->
 
-        // One lambda per row (will become List<List<Measurable>> in the Layout composable)
-        return@map {
-            if (showSelectionColumn) {
-                CheckboxCell(rowData in selectedData, interactionSource) { onBodySelectionClick(rowData) }
-            }
-            columnSpecsNormalized.forEach { columnSpec ->
+            // Used to share hover interaction across multiple composables in a row
+            val interactionSource = remember { MutableInteractionSource() }
 
-                val textAlign = when (columnSpec.horizontalArrangement) {
-                    Arrangement.Start -> TextAlign.Start
-                    Arrangement.End -> TextAlign.End
-                    else -> TextAlign.Center
+            // One lambda per row (will become List<List<Measurable>> in the Layout composable)
+            return@mapIndexed {
+                if (showSelectionColumn) {
+                    CheckboxCell(rowData in selectedData, interactionSource) {
+                        onBodySelectionClick(
+                            rowData
+                        )
+                    }
                 }
+                columnSpecsNormalized.forEach { columnSpec ->
 
-                when (columnSpec) {
-                    is TextColumnSpec -> TextCell(columnSpec.valueSelector(rowData), textAlign, interactionSource)
-                    is IntColumnSpec -> IntCell(columnSpec.valueSelector(rowData), columnSpec.numberFormat, textAlign, interactionSource)
-                    is DoubleColumnSpec -> DoubleCell(columnSpec.valueSelector(rowData), columnSpec.numberFormat, textAlign, interactionSource)
-                    is DateColumnSpec -> DateCell(columnSpec.valueSelector(rowData), columnSpec.dateFormat, textAlign, interactionSource)
-                    is CheckboxColumnSpec -> CheckboxCell(columnSpec.valueSelector(rowData), interactionSource, onClick = { }) // TODO
-                    is DropdownColumnSpec -> DropdownCell(columnSpec, rowData, interactionSource)
+                    val textAlign = when (columnSpec.horizontalArrangement) {
+                        Arrangement.Start -> TextAlign.Start
+                        Arrangement.End -> TextAlign.End
+                        else -> TextAlign.Center
+                    }
+
+                    when (columnSpec) {
+                        is TextColumnSpec -> TextCell(
+                            columnSpec.valueSelector(rowData),
+                            textAlign,
+                            interactionSource,
+                            index,
+                            onOpenEditModal = if (columnSpec.onEdit != null) ({ index, pos ->
+                                editPopupState.value = editPopupState.value.show(
+                                    pos,
+                                    columnSpec.valueSelector(paginatedData[index]),
+                                    onConfirm = { newValue ->
+                                        columnSpec.onEdit.invoke(index, newValue)
+                                        editPopupState.value = editPopupState.value.hide()
+                                    }
+                                )
+                            }) else null
+                        )
+
+                        is IntColumnSpec -> IntCell(
+                            columnSpec.valueSelector(rowData),
+                            columnSpec.numberFormat,
+                            textAlign,
+                            interactionSource
+                        )
+
+                        is DoubleColumnSpec -> DoubleCell(
+                            columnSpec.valueSelector(rowData),
+                            columnSpec.numberFormat,
+                            textAlign,
+                            interactionSource
+                        )
+
+                        is DateColumnSpec -> DateCell(
+                            columnSpec.valueSelector(rowData),
+                            columnSpec.dateFormat,
+                            textAlign,
+                            interactionSource
+                        )
+
+                        is CheckboxColumnSpec -> CheckboxCell(
+                            columnSpec.valueSelector(rowData),
+                            interactionSource,
+                            onClick = { }) // TODO
+                        is DropdownColumnSpec -> DropdownCell(
+                            columnSpec,
+                            rowData,
+                            interactionSource
+                        )
+                    }
                 }
             }
         }
-    }
 
     // Header is appended to body rows in order to calculate the column width together
     // TODO headers should not figure into the column width, text should be truncated instead
@@ -415,6 +463,9 @@ public fun <T> Table(
                     }
                 )
             }
+
+            // Handles hiding itself when not set to visible
+            EditPopup(editPopupState)
         }
     }
 }
