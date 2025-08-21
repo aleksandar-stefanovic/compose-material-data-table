@@ -40,12 +40,13 @@ public class IntColumnSpec<T>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> Int,
-    public val numberFormat: String? = null,
+    public val formatToString: (Int) -> String = { it.toString() },
+    public val parseToInt: (String) -> Int = { it.toInt()  },
     onEdit: ((rowIndex: Int, newValue: Int) -> Unit)? = null
 ) : ColumnSpec<T, Int>(headerName, widthSetting, valueSelector, Arrangement.End, onEdit) {
 
     override fun copy(widthSetting: WidthSetting): ColumnSpec<T, Int> {
-        return IntColumnSpec(headerName, widthSetting, valueSelector, numberFormat, onEdit)
+        return IntColumnSpec(headerName, widthSetting, valueSelector, formatToString, parseToInt, onEdit)
     }
 }
 
@@ -53,15 +54,15 @@ public class DoubleColumnSpec<T>(
     headerName: String,
     widthSetting: WidthSetting,
     valueSelector: (T) -> Double,
-    public val numberFormat: String? = null,
+    public val formatToString: (Double) -> String = { it.toString() },
+    public val parseToDouble: (String) -> Double = { it.toDouble()  },
     onEdit: ((rowIndex: Int, newValue: Double) -> Unit)? = null
 ): ColumnSpec<T, Double>(headerName, widthSetting, valueSelector, Arrangement.End, onEdit) {
 
     override fun copy(widthSetting: WidthSetting): ColumnSpec<T, Double> {
-        return DoubleColumnSpec(headerName, widthSetting, valueSelector, numberFormat, onEdit)
+        return DoubleColumnSpec(headerName, widthSetting, valueSelector, formatToString, parseToDouble, onEdit)
     }
 }
-
 
 public class DateColumnSpec<T>(
     headerName: String,

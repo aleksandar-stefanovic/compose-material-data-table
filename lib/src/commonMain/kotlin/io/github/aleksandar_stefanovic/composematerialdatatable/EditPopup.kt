@@ -30,9 +30,10 @@ internal data class EditPopupState(
     val position: Offset = Offset.Zero,
     val text: String = "",
     val onConfirm: (String) -> Unit = {},
+    val validator: (String) -> Boolean = { true }
 ) {
-    fun show(position: Offset, text: String, onConfirm: (String) -> Unit): EditPopupState {
-        return this.copy(visible = true, position = position, text = text, onConfirm = onConfirm)
+    fun show(position: Offset, text: String, onConfirm: (String) -> Unit, validator: (String) -> Boolean = { true }): EditPopupState {
+        return this.copy(visible = true, position = position, text = text, onConfirm = onConfirm, validator = validator)
     }
 
     fun hide() = this.copy(visible = false)
@@ -42,7 +43,6 @@ internal data class EditPopupState(
 internal fun rememberEditPopupState(): MutableState<EditPopupState> {
     return remember { mutableStateOf(EditPopupState()) }
 }
-
 
 @Composable
 internal fun EditPopup(state: MutableState<EditPopupState>) {

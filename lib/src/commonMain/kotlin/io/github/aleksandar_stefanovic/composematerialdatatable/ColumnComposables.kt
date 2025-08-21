@@ -134,33 +134,39 @@ internal fun TextCell(
 }
 
 @Composable
-internal fun IntCell(int: Int, numberFormat: String? = null, textAlign: TextAlign, interactionSource: MutableInteractionSource) {
-
-    val isHovered by interactionSource.collectIsHoveredAsState()
-    val backgroundColor = if (isHovered) hoverColor else Color.White
-
-    val stringValue = numberFormat?.format(int) ?: int.toString()
-    Text(
+internal fun IntCell(
+    int: Int,
+    formatToString: (Int) -> String,
+    textAlign: TextAlign,
+    interactionSource: MutableInteractionSource,
+    rowIndex: Int,
+    onOpenEditModal: ((rowIndex: Int, positionInRoot: Offset) -> Unit)? = null
+) {
+    val stringValue = formatToString(int)
+    TextCell(
         stringValue,
-        Modifier.hoverable(interactionSource).background(backgroundColor).padding(16.dp),
-        textAlign = textAlign,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1
+        textAlign,
+        interactionSource,
+        rowIndex,
+        onOpenEditModal
     )
 }
 
 @Composable
-internal fun DoubleCell(double: Double, numberFormat: String? = null, textAlign: TextAlign, interactionSource: MutableInteractionSource) {
-
-    val isHovered by interactionSource.collectIsHoveredAsState()
-    val backgroundColor = if (isHovered) hoverColor else Color.White
-
-    Text(
-        numberFormat?.format(double) ?: double.toString(),
-        Modifier.hoverable(interactionSource).background(backgroundColor).padding(16.dp),
-        textAlign = textAlign,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1
+internal fun DoubleCell(
+    double: Double,
+    formatToString: (Double) -> String,
+    textAlign: TextAlign,
+    interactionSource: MutableInteractionSource,
+    rowIndex: Int,
+    onOpenEditModal: ((rowIndex: Int, positionInRoot: Offset) -> Unit)? = null
+) {
+    TextCell(
+        formatToString(double),
+        textAlign,
+        interactionSource,
+        rowIndex,
+        onOpenEditModal
     )
 }
 

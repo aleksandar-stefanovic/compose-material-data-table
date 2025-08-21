@@ -180,7 +180,7 @@ public fun <T> Table(
     val editPopupState = rememberEditPopupState()
 
     val composableLambdasByRow: List<@Composable () -> Unit> =
-        paginatedData.mapIndexed { index, rowData ->
+        paginatedData.mapIndexed { rowIndex, rowData ->
 
             // Used to share hover interaction across multiple composables in a row
             val interactionSource = remember { MutableInteractionSource() }
@@ -207,7 +207,7 @@ public fun <T> Table(
                             columnSpec.valueSelector(rowData),
                             textAlign,
                             interactionSource,
-                            index,
+                            rowIndex,
                             onOpenEditModal = if (columnSpec.onEdit != null) ({ index, pos ->
                                 editPopupState.value = editPopupState.value.show(
                                     pos,
@@ -222,16 +222,40 @@ public fun <T> Table(
 
                         is IntColumnSpec -> IntCell(
                             columnSpec.valueSelector(rowData),
-                            columnSpec.numberFormat,
+                            columnSpec.formatToString,
                             textAlign,
-                            interactionSource
-                        )
+                            interactionSource,
+                            rowIndex,
+                            onOpenEditModal = if (columnSpec.onEdit != null) ({ index, pos ->
+
+                                val value = columnSpec.valueSelector(paginatedData[index])
+
+                                editPopupState.value = editPopupState.value.show(
+                                    pos,
+                                    columnSpec.formatToString(value),
+                                    onConfirm = { newValue ->
+                                        columnSpec.onEdit.invoke(index, columnSpec.parseToInt(newValue))
+                                        editPopupState.value = editPopupState.value.hide()
+                                    }
+                                )
+                            }) else null                        )
 
                         is DoubleColumnSpec -> DoubleCell(
                             columnSpec.valueSelector(rowData),
-                            columnSpec.numberFormat,
+                            columnSpec.formatToString,
                             textAlign,
-                            interactionSource
+                            interactionSource,
+                            rowIndex,
+                            onOpenEditModal = if (columnSpec.onEdit != null) ({ index, pos ->
+                                editPopupState.value = editPopupState.value.show(
+                                    pos,
+                                    columnSpec.formatToString(columnSpec.valueSelector(paginatedData[index])),
+                                    onConfirm = { newValue ->
+                                        columnSpec.onEdit.invoke(index, columnSpec.parseToDouble(newValue))
+                                        editPopupState.value = editPopupState.value.hide()
+                                    }
+                                )
+                            }) else null
                         )
 
                         is DateColumnSpec -> DateCell(
