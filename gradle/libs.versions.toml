@@ -8,7 +8,7 @@ androidx-lifecycle = "2.9.2"
 compose-multiplatform = "1.8.2"
 kotlin = "2.1.21"
 kotlinx-coroutines = "1.10.2"
-kotlinxDatetime = "0.6.1"
+kotlinxDatetime = "0.7.1"
 vanniktech-maven-publish = "0.30.0"
 
 [libraries]
