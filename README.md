@@ -49,6 +49,7 @@ kotlin {
   - Date
   - Dropdown (specific set of values)
   - Checkbox (Boolean)
+- Optional cell editing (for now, String, Int, Double and Checkbox types are supported, with Date and Dropdown support coming soon)
 - Column aligning
 - Text selection (works but selecting multiple cells at once just concatenates them without whitespace at the moment)
 - Toggleable selection column (first column with tri-state checkbox header and checkbox cells, which emits events on interaction)

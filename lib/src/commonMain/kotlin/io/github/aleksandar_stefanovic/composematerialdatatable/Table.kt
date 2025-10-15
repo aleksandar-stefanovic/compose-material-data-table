@@ -188,7 +188,7 @@ public fun <T> Table(
             // One lambda per row (will become List<List<Measurable>> in the Layout composable)
             return@mapIndexed {
                 if (showSelectionColumn) {
-                    CheckboxCell(rowData in selectedData, interactionSource) {
+                    CheckboxCell(rowData in selectedData, interactionSource, rowIndex) { _, _ ->
                         onBodySelectionClick(
                             rowData
                         )
@@ -268,7 +268,12 @@ public fun <T> Table(
                         is CheckboxColumnSpec -> CheckboxCell(
                             columnSpec.valueSelector(rowData),
                             interactionSource,
-                            onClick = { }) // TODO
+                            rowIndex,
+                        ) { rowIndex, newValue ->
+                            if (columnSpec.onEdit != null) {
+                                columnSpec.onEdit(rowIndex, newValue)
+                            }
+                        }
                         is DropdownColumnSpec -> DropdownCell(
                             columnSpec,
                             rowData,

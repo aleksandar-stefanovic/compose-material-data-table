@@ -91,8 +91,8 @@ internal fun App() {
         val columnSpecs = listOf<ColumnSpec<Movie, *>>(
             TextColumnSpec("Title", WidthSetting.Flex(1f), valueSelector = { it.title }, onEdit = { index, newValue -> moviesState[index] = moviesState[index].copy(title = newValue) } ),
             DateColumnSpec("Release Date", WidthSetting.WrapContent, { it.releaseDate }),
-            DoubleColumnSpec("Rating", WidthSetting.WrapContent, valueSelector = { it.rating }),
-            IntColumnSpec("Awards", WidthSetting.WrapContent, { it.awardCount }),
+            DoubleColumnSpec("Rating", WidthSetting.WrapContent, valueSelector = { it.rating }, onEdit = { index, newValue -> moviesState[index] = moviesState[index].copy(rating = newValue) }),
+            IntColumnSpec("Awards", WidthSetting.WrapContent, { it.awardCount }, onEdit = { index, newValue -> moviesState[index] = moviesState[index].copy(awardCount = newValue) }),
             DropdownColumnSpec(
                 "Genre",
                 WidthSetting.WrapContent,
@@ -100,7 +100,7 @@ internal fun App() {
                 { it.stringValue },
                 Genre.entries.toList()
             ),
-            CheckboxColumnSpec("Watched", WidthSetting.WrapContent, { it.watched })
+            CheckboxColumnSpec("Watched", WidthSetting.WrapContent, { it.watched }, onEdit = { index, newValue -> moviesState[index] = moviesState[index].copy(watched = newValue)})
         )
 
         Column {

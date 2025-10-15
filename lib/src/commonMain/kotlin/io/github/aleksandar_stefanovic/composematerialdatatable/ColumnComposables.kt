@@ -186,14 +186,19 @@ internal fun DateCell(date: LocalDate, dateFormat: DateTimeFormat<LocalDate>, te
 }
 
 @Composable
-internal fun CheckboxCell(selected: Boolean, interactionSource: MutableInteractionSource, onClick: (Boolean) -> Unit) {
+internal fun CheckboxCell(
+    selected: Boolean,
+    interactionSource: MutableInteractionSource,
+    rowIndex: Int,
+    onClick: (rowIndex: Int, newValue: Boolean) -> Unit
+) {
 
     val isHovered by interactionSource.collectIsHoveredAsState()
     val backgroundColor = if (isHovered) hoverColor else Color.White
 
     Checkbox(
         selected,
-        onClick,
+        onCheckedChange = { newValue -> onClick(rowIndex, newValue) },
         Modifier.hoverable(interactionSource).background(backgroundColor).padding(16.dp)
     )
 }
