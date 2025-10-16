@@ -98,7 +98,8 @@ internal fun App() {
                 WidthSetting.WrapContent,
                 { it.genre },
                 { it.stringValue },
-                Genre.entries.toList()
+                Genre.entries.toList(),
+                onEdit = { rowIndex, newValue -> moviesState[rowIndex] = moviesState[rowIndex].copy(genre = newValue) }
             ),
             CheckboxColumnSpec("Watched", WidthSetting.WrapContent, { it.watched }, onEdit = { index, newValue -> moviesState[index] = moviesState[index].copy(watched = newValue)})
         )

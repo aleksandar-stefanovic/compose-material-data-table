@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material.Checkbox
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -171,7 +172,12 @@ internal fun DoubleCell(
 }
 
 @Composable
-internal fun DateCell(date: LocalDate, dateFormat: DateTimeFormat<LocalDate>, textAlign: TextAlign, interactionSource: MutableInteractionSource) {
+internal fun DateCell(
+    date: LocalDate,
+    dateFormat: DateTimeFormat<LocalDate>,
+    textAlign: TextAlign,
+    interactionSource: MutableInteractionSource
+) {
 
     val isHovered by interactionSource.collectIsHoveredAsState()
     val backgroundColor = if (isHovered) hoverColor else Color.White
@@ -207,6 +213,7 @@ internal fun CheckboxCell(
 internal fun <T, S : Comparable<S>> DropdownCell(
     spec: DropdownColumnSpec<T, S>,
     rowData: T,
+    rowIndex: Int,
     interactionSource: MutableInteractionSource
 ) {
     val isHovered by interactionSource.collectIsHoveredAsState()
@@ -214,15 +221,26 @@ internal fun <T, S : Comparable<S>> DropdownCell(
 
     var expanded by remember { mutableStateOf(false) }
 
-    Box(Modifier.clickable { expanded = true }.hoverable(interactionSource).background(backgroundColor).padding(16.dp)) {
+    val modifier = Modifier.hoverable(interactionSource).background(backgroundColor).padding(16.dp).let {
+        if (spec.onEdit != null) {
+            it.clickable { expanded = true }
+        } else {
+            it
+        }
+    }
+
+    Box(modifier) {
         Text(spec.valueFormatter(spec.valueSelector(rowData)))
-        DropdownMenu(expanded, onDismissRequest = { expanded = false }) {
-            spec.choices.forEach { choice ->
-                DropdownMenuItem(onClick = {
-                    spec.onEdit?.let { it(0, choice) } // TODO
-                    expanded = false
-                }) {
-                    Text(spec.valueFormatter(choice))
+        // This is necessary because the DropdownCell is wrapped with a SelectionContainer
+        DisableSelection {
+            DropdownMenu(expanded, onDismissRequest = { expanded = false }) {
+                spec.choices.forEach { choice ->
+                    DropdownMenuItem(onClick = {
+                        spec.onEdit?.let { it(rowIndex, choice) }
+                        expanded = false
+                    }) {
+                        Text(spec.valueFormatter(choice))
+                    }
                 }
             }
         }

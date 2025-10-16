@@ -277,6 +277,7 @@ public fun <T> Table(
                         is DropdownColumnSpec -> DropdownCell(
                             columnSpec,
                             rowData,
+                            rowIndex,
                             interactionSource
                         )
                     }
