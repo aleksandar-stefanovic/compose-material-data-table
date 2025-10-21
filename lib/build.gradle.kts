@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     // Recommended by https://github.com/kotlin-hands-on/fibonacci
     alias(libs.plugins.vanniktechMavenPublish)
+    alias(libs.plugins.dokka)
 }
 
 version = "1.2.2"

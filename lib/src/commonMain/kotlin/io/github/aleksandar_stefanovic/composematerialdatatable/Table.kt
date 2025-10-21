@@ -41,6 +41,9 @@ internal enum class SortOrder {
     ASC, DESC
 }
 
+/**
+ * Test
+ */
 @Composable
 public fun <T> Table(
     columnSpecs: List<ColumnSpec<T, *>>,
