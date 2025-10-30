@@ -21,7 +21,7 @@ public sealed class ColumnSpec<T, S: Comparable<S>>(
     // Right now, the only reason to copy a ColumnSpec is to modify the widthSetting, thus it's the
     // only parameter of the function, so the code isn't overloaded with boilerplate code of
     // complete copying of an instance
-    public abstract fun copy(widthSetting: WidthSetting): ColumnSpec<T, S>
+    internal abstract fun copy(widthSetting: WidthSetting): ColumnSpec<T, S>
 }
 
 public class TextColumnSpec<T>(
